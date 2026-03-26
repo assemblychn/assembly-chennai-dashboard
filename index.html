@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assembly Chennai — Allocation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f5f7;--surface:#ffffff;--surface2:#f8f9fb;--border:#e4e7ed;--border2:#ced3dc;
+  --accent:#1a56db;--accent-lt:#eff4ff;--accent-md:#c3d3fd;
+  --available:#0a7c5c;--avail-lt:#e6f7f2;
+  --partial:#b45309;--partial-lt:#fef3e2;
+  --alloc:#1a56db;--alloc-lt:#eff4ff;
+  --fte:#6d28d9;--fte-lt:#f0ebff;
+  --mgmt:#4b5563;--mgmt-lt:#f1f2f4;
+  --text:#111827;--text-2:#374151;--text-3:#6b7280;--text-4:#9ca3af;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.10),0 4px 8px rgba(0,0,0,.05);
+  --r:12px;--rs:8px;
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'Outfit',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;min-height:100vh}
+
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex;align-items:stretch;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.brand-icon{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:18px;height:18px;fill:#fff}
+.brand-name{font-family:var(--font-d);font-size:19px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.brand-name span{color:var(--accent)}
+.topbar-divider{width:1px;background:var(--border);height:26px;margin:0 6px}
+.topbar-sub{font-size:12px;color:var(--text-3)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.live-badge{display:flex;align-items:center;gap:6px;background:var(--avail-lt);color:var(--available);border:1px solid #a7f0d8;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.4px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--available);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar-date{font-size:12px;color:var(--text-3)}
+
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex}
+.tab-btn{background:none;border:none;cursor:pointer;padding:14px 20px;font-family:var(--font-b);font-size:13px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .18s,border-color .18s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab-btn:hover{color:var(--text-2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+.main{padding:28px 36px;max-width:1600px}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s;position:relative;overflow:hidden}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
+.stat-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.stat-value{font-family:var(--font-d);font-size:34px;font-weight:700;line-height:1;margin-bottom:6px}
+.stat-sub{font-size:11.5px;color:var(--text-3)}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:var(--font-d);font-size:17px;font-weight:600}
+
+.charts-row{display:grid;grid-template-columns:380px 1fr;gap:20px;margin-bottom:24px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm)}
+.chart-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:20px}
+.donut-wrap{display:flex;align-items:center;gap:32px}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:11px}
+.legend-item{display:flex;align-items:center;gap:10px}
+.legend-sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.legend-lbl{font-size:12.5px;color:var(--text-2);flex:1}
+.legend-n{font-size:13px;font-weight:700}
+.fn-breakdown{display:flex;flex-direction:column;gap:11px}
+.fn-row{display:flex;align-items:center;gap:12px}
+.fn-row-lbl{width:140px;font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.fn-bar-bg{flex:1;height:7px;background:var(--bg);border-radius:10px}
+.fn-bar{height:100%;border-radius:10px}
+.fn-row-n{font-size:12px;font-weight:600;color:var(--text-3);min-width:22px;text-align:right}
+
+.notice-strip{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--rs);padding:12px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:10px}
+.notice-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.notice-text{font-size:12.5px;color:#78350f;line-height:1.6}
+.notice-text strong{font-weight:600;color:#92400e}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.chip{background:#fff;border:1px solid #fde68a;color:#92400e;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:500}
+
+.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.avail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s}
+.avail-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.av-name{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.av-spec{font-size:11.5px;color:var(--text-3);margin-bottom:10px}
+.av-fn{margin-bottom:10px}
+.av-meter-bg{height:5px;background:var(--bg);border-radius:10px;margin-bottom:10px}
+.av-meter-fill{height:100%;border-radius:10px}
+.av-footer{display:flex;justify-content:space-between;align-items:center}
+.av-free{font-size:12.5px;font-weight:700}
+
+.fn-pill{display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.fn-account{background:#eff4ff;color:#1a56db}.fn-content{background:#e6f7f2;color:#0a7c5c}
+.fn-creative{background:#f0ebff;color:#6d28d9}.fn-marketing{background:#fef3e2;color:#b45309}
+.fn-technology{background:#fce8f3;color:#9d174d}.fn-operations{background:#f1f2f4;color:#4b5563}
+.fn-people{background:#fff8e1;color:#92400e}.fn-corporate{background:#f1f2f4;color:#374151}
+.fn-finance{background:#eef2ff;color:#4338ca}
+
+.stag{font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.2px}
+.tag-avail{background:var(--avail-lt);color:var(--available)}
+.tag-partial{background:var(--partial-lt);color:var(--partial)}
+.tag-alloc{background:var(--alloc-lt);color:var(--alloc)}
+.tag-fte{background:var(--fte-lt);color:var(--fte)}
+.tag-mgmt{background:var(--mgmt-lt);color:var(--mgmt)}
+
+.sdot{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.d-av{background:var(--available)}.d-pt{background:var(--partial)}.d-al{background:var(--alloc)}.d-mg{background:var(--mgmt)}
+
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.filter-input,.filter-select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:8px 13px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;box-shadow:var(--shadow-sm)}
+.filter-input{min-width:240px}
+.filter-input:focus,.filter-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+
+.table-wrap{border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)}
+table{width:100%;border-collapse:collapse;background:var(--surface)}
+thead th{background:var(--surface2);padding:11px 15px;text-align:left;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .12s}
+thead th:hover{background:#eef0f4}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f8f9fb}
+tbody td{padding:11px 15px;vertical-align:middle}
+.alloc-cell{display:flex;align-items:center;gap:10px}
+.alloc-bg{width:72px;height:5px;background:var(--bg);border-radius:10px;flex-shrink:0}
+.alloc-fill{height:100%;border-radius:10px}
+.alloc-pct{font-size:12px;font-weight:700;min-width:34px;text-align:right}
+.notes-cell{font-size:12px;color:var(--text-3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:9px 18px;font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,box-shadow .15s;box-shadow:0 2px 6px rgba(26,86,219,.25)}
+.btn-primary:hover{background:#1447c0;box-shadow:0 4px 12px rgba(26,86,219,.3)}
+.btn-edit{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:6px;padding:4px 11px;font-size:11.5px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s}
+.btn-edit:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+.btn-cancel{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:var(--rs);padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s}
+.btn-cancel:hover{border-color:var(--border2)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:30px 32px;width:500px;max-width:95vw;transform:translateY(10px) scale(.99);transition:transform .22s;border:1px solid var(--border)}
+.modal-bg.open .modal{transform:translateY(0) scale(1)}
+.modal-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:3px}
+.modal-sub{font-size:12.5px;color:var(--text-3);margin-bottom:22px}
+.form-row{margin-bottom:15px}
+.form-label{display:block;font-size:11.5px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.form-hint{font-size:11px;color:var(--text-4);font-weight:400}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:9px 13px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:var(--surface)}
+.form-textarea{resize:vertical;min-height:64px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.retainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
+.retainer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm);transition:box-shadow .18s}
+.retainer-card:hover{box-shadow:var(--shadow-md)}
+.ret-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.ret-meta{font-size:11.5px;color:var(--text-3);margin-bottom:14px}
+.ret-alloc{display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border-radius:8px;padding:9px 14px}
+.ret-alloc-lbl{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+.ret-alloc-val{font-family:var(--font-d);font-size:22px;font-weight:700}
+
+.forecast-note{background:var(--accent-lt);border:1px solid var(--accent-md);border-radius:var(--rs);padding:13px 18px;font-size:12.5px;color:#1e3a8a;line-height:1.65;margin-bottom:22px}
+.forecast-note strong{font-weight:700}
+
+.toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#fff;border-radius:10px;padding:12px 22px;font-size:13px;font-weight:500;z-index:300;transform:translateY(16px);opacity:0;transition:all .28s;pointer-events:none;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateY(0);opacity:1}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-4);font-size:13px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── PENDING TASKS ── */
+.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+.pending-card{background:var(--surface);border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:var(--r);padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;transition:box-shadow .18s,transform .18s}
+.pending-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.pending-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+.pending-info{flex:1}
+.pending-name{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.pending-tag{display:inline-block;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:600;letter-spacing:.2px}
+
+/* ── ADMIN MODE ── */
+.admin-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);color:var(--text-3);border-radius:var(--rs);padding:6px 14px;font-family:var(--font-b);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.admin-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+.admin-btn.active{background:#fef2f2;border-color:#fca5a5;color:#dc2626}
+.admin-btn .lock-icon{font-size:13px}
+.edit-only{display:none}
+body.admin-mode .edit-only{display:inline-flex}
+body.admin-mode .btn-edit{display:inline-block}
+.btn-edit{display:none}
+.admin-banner{background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 36px;font-size:12px;color:#92400e;display:none;align-items:center;gap:8px;font-weight:500}
+body.admin-mode .admin-banner{display:flex}
+
+/* password modal */
+.pw-modal-bg{position:fixed;inset:0;background:rgba(17,24,39,.5);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(3px)}
+.pw-modal-bg.open{opacity:1;pointer-events:all}
+.pw-modal{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:32px;width:380px;max-width:95vw;transform:translateY(10px);transition:transform .22s;border:1px solid var(--border);text-align:center}
+.pw-modal-bg.open .pw-modal{transform:translateY(0)}
+.pw-icon{font-size:36px;margin-bottom:14px}
+.pw-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:6px}
+.pw-sub{font-size:12.5px;color:var(--text-3);margin-bottom:22px}
+.pw-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:11px 14px;font-family:var(--font-b);font-size:14px;outline:none;text-align:center;letter-spacing:3px;transition:border-color .15s,box-shadow .15s;margin-bottom:6px}
+.pw-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+.pw-error{font-size:12px;color:#dc2626;margin-bottom:14px;min-height:18px}
+.pw-actions{display:flex;gap:10px;justify-content:center;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 4h2v-2h2v2h2v2h-2v2h-2v-2h-2z"/></svg></div>
+    <span class="brand-name">Assembly<span> Chennai</span></span>
+    <div class="topbar-divider"></div>
+    <span class="topbar-sub">Allocation &amp; Capacity Dashboard</span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-date" id="currentDate"></span>
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
+    <button class="admin-btn" id="adminBtn" onclick="handleAdminClick()">
+      <span class="lock-icon">🔒</span><span id="adminBtnLabel">Admin</span>
+    </button>
+  </div>
+</div>
+
+<div class="admin-banner">
+  ✏️ &nbsp;<strong>Admin Mode ON</strong> — You can now edit employee data, notes and allocation. Viewers cannot see or access this mode.
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('overview')">⬜ Overview</button>
+  <button class="tab-btn" onclick="switchTab('roster')">👥 Full Roster</button>
+  <button class="tab-btn" onclick="switchTab('availability')">✅ Availability</button>
+  <button class="tab-btn" onclick="switchTab('forecast')">📈 Forecast &amp; Retainers</button>
+</div>
+
+<div class="main">
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-label">Allocation Status</div>
+        <div class="donut-wrap">
+          <svg width="120" height="120" id="donutSvg" viewBox="0 0 120 120"></svg>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">Headcount by Function</div>
+        <div class="fn-breakdown" id="fnBreakdown"></div>
+      </div>
+    </div>
+    <div class="notice-strip">
+      <div class="notice-icon">📋</div>
+      <div class="notice-text">
+        <strong>Monthly Reports — Shared Minimal Contribution:</strong> The following reports carry shared effort across teams.
+        <div class="chips">
+          <span class="chip">FloatX Server Maintenance</span>
+          <span class="chip">Grubb</span>
+          <span class="chip">Okada</span>
+          <span class="chip">Norwell Pharma Science</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Pending Tasks</div>
+      <span style="font-size:12px;color:var(--text-3)">From completed or partially completed projects</span>
+    </div>
+    <div class="pending-grid">
+      <div class="pending-card">
+        <div class="pending-dot"></div>
+        <div class="pending-info">
+          <div class="pending-name">AMP Deployment Support</div>
+          <div class="pending-tag">Pending</div>
+        </div>
+      </div>
+      <div class="pending-card">
+        <div class="pending-dot"></div>
+        <div class="pending-info">
+          <div class="pending-name">Audience HUB Test Evidence Submission</div>
+          <div class="pending-tag">Pending</div>
+        </div>
+      </div>
+      <div class="pending-card">
+        <div class="pending-dot"></div>
+        <div class="pending-info">
+          <div class="pending-name">Political Campaign Deployment Support</div>
+          <div class="pending-tag">Pending</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Currently Available Capacity</div>
+    </div>
+    <div class="avail-grid" id="availGrid"></div>
+  </div>
+
+  <!-- ROSTER -->
+  <div class="tab-panel" id="tab-roster">
+    <div class="section-header">
+      <div class="section-title">Full Team Roster</div>
+      <button class="btn-primary edit-only" onclick="openAddModal()">+ Add Employee</button>
+    </div>
+    <div class="filter-bar">
+      <input class="filter-input" id="searchInput" placeholder="🔍  Search name, project, specialisation…" oninput="renderTable()">
+      <select class="filter-select" id="fnFilter" onchange="renderTable()"><option value="">All Functions</option></select>
+      <select class="filter-select" id="statusFilter" onchange="renderTable()">
+        <option value="">All Statuses</option>
+        <option value="Available">Available</option>
+        <option value="Partial">Partially Available</option>
+        <option value="Allocated">Allocated</option>
+        <option value="FTE">FTE Engagement</option>
+        <option value="Management">Management / Admin</option>
+      </select>
+      <select class="filter-select" id="specFilter" onchange="renderTable()"><option value="">All Specialisations</option></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="sortTable('employee')">Employee</th>
+          <th onclick="sortTable('function')">Function</th>
+          <th onclick="sortTable('specialisation')">Specialisation</th>
+          <th onclick="sortTable('allocationStatus')">Status</th>
+          <th onclick="sortTable('allocationPct')">Allocation %</th>
+          <th>Notes / Project</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="rosterTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AVAILABILITY -->
+  <div class="tab-panel" id="tab-availability">
+    <div class="section-header">
+      <div class="section-title">Availability View</div>
+      <select class="filter-select" id="availFnFilter" onchange="renderAvailability()"><option value="">All Functions</option></select>
+    </div>
+    <div class="avail-grid" id="availFullGrid"></div>
+  </div>
+
+  <!-- FORECAST -->
+  <div class="tab-panel" id="tab-forecast">
+    <div class="forecast-note">
+      <strong>ℹ️ Allocation Notes</strong>
+      <ul style="margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:6px;list-style:disc">
+        <li>Account Management, Project Management, People Practices, Corporate Management, and Finance have no fixed allocation % — they serve as client-facing, support, or practice lead roles.</li>
+        <li>DevOps team members span multiple Retainers/AMCs depending on work requests.</li>
+        <li>Creative team is marked fully engaged on named accounts.</li>
+        <li>Monthly reports carry shared contribution across teams.</li>
+      </ul>
+    </div>
+    <div class="section-header" style="margin-bottom:16px"><div class="section-title">Active Retainers / AMCs</div></div>
+    <div class="retainer-grid">
+      <div class="retainer-card"><div class="ret-name">ACR IIT Madras — Shaastra</div><div class="ret-meta">Mag Population · Content Service Team</div><div class="ret-alloc"><span class="ret-alloc-lbl">Max Allocation</span><span class="ret-alloc-val" style="color:var(--available)">20%</span></div></div>
+      <div class="retainer-card"><div class="ret-name">FloatX Retainer</div><div class="ret-meta">Shared across teams</div><div class="ret-alloc"><span class="ret-alloc-lbl">Max Allocation</span><span class="ret-alloc-val" style="color:var(--accent)">47%</span></div></div>
+      <div class="retainer-card"><div class="ret-name">AMP Engagement</div><div class="ret-meta">Technology Services · FTE</div><div class="ret-alloc"><span class="ret-alloc-lbl">Allocation</span><span class="ret-alloc-val" style="color:var(--fte)">100%</span></div></div>
+      <div class="retainer-card"><div class="ret-name">ADC Poland</div><div class="ret-meta">Creative Services · FTE Engagement</div><div class="ret-alloc"><span class="ret-alloc-lbl">Allocation</span><span class="ret-alloc-val" style="color:var(--fte)">100%</span></div></div>
+      <div class="retainer-card"><div class="ret-name">ADC North America</div><div class="ret-meta">Creative Services · FTE Engagement</div><div class="ret-alloc"><span class="ret-alloc-lbl">Allocation</span><span class="ret-alloc-val" style="color:var(--fte)">100%</span></div></div>
+      <div class="retainer-card"><div class="ret-name">Assembly SG — Banyan</div><div class="ret-meta">Creative Services · Partial</div><div class="ret-alloc"><span class="ret-alloc-lbl">Allocation</span><span class="ret-alloc-val" style="color:var(--partial)">50%</span></div></div>
+    </div>
+    <div class="section-header" style="margin-bottom:16px"><div class="section-title">Capacity Forecast by Function</div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Function</th><th>Total HC</th><th>Fully Allocated</th>
+          <th>Partially Available</th><th>Available</th><th>Mgmt / Admin</th><th>Available FTE Equiv.</th>
+        </tr></thead>
+        <tbody id="forecastTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Edit Employee</div>
+    <div class="modal-sub" id="modalSub">Update allocation details</div>
+    <div class="form-row">
+      <label class="form-label">Employee Name</label>
+      <input class="form-input" id="f_employee" placeholder="Full name">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label class="form-label">Function</label>
+        <select class="form-select" id="f_function">
+          <option>Account Management</option><option>Content Services</option>
+          <option>Corporate Management</option><option>Creative Services</option>
+          <option>Marketing Services</option><option>Operations</option>
+          <option>People Practices</option><option>Technology Services</option>
+          <option>Finance</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Specialisation</label>
+        <input class="form-input" id="f_specialisation" placeholder="e.g. Back End">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label class="form-label">Allocation Status</label>
+        <select class="form-select" id="f_allocationStatus">
+          <option>Client Servicing</option><option>Available</option>
+          <option>Partially Available</option><option>India Business</option>
+          <option>FTE Engagement</option><option>Project Management</option>
+          <option>Practice Lead</option><option>System Admin</option>
+          <option>People Practices</option><option>Corporate Management</option>
+          <option>Finance</option><option>DevOps</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Allocation % <span class="form-hint">(blank for mgmt)</span></label>
+        <input class="form-input" id="f_allocationPct" type="number" min="0" max="100" placeholder="0–100">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Notes / Project Details</label>
+      <textarea class="form-textarea" id="f_notes" placeholder="e.g. FloatX Support, ADC Poland, Audience Hub…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveEmployee()">Save Changes</button>
+    </div>
+  </div>
+</div>
+<!-- PASSWORD MODAL -->
+<div class="pw-modal-bg" id="pwModal">
+  <div class="pw-modal">
+    <div class="pw-icon">🔐</div>
+    <div class="pw-title">Admin Access</div>
+    <div class="pw-sub">Enter your password to enable editing</div>
+    <input class="pw-input" id="pwInput" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')submitPassword()">
+    <div class="pw-error" id="pwError"></div>
+    <div class="pw-actions">
+      <button class="btn-cancel" onclick="closePwModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let employees=[
+  {id:1,function:"Account Management",employee:"Shweta Krishna",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
+  {id:2,function:"Account Management",employee:"Gunjan Bansal",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
+  {id:3,function:"Account Management",employee:"Manasi Popat",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
+  {id:4,function:"Account Management",employee:"Sabita Chowdhry",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
+  {id:5,function:"Content Services",employee:"Priyanka NV",specialisation:"Content Services",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:6,function:"Content Services",employee:"Vidhyavathi S",specialisation:"Content Services",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:7,function:"Content Services",employee:"Naveen Tarigopula",specialisation:"Content Services",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:8,function:"Content Services",employee:"Paul Aristotil K",specialisation:"Content Services",allocationStatus:"Partially Available",allocationPct:50,notes:""},
+  {id:9,function:"Content Services",employee:"Prasanna Kumar M",specialisation:"Content Services",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:10,function:"Content Services",employee:"Tanuja Mungurla",specialisation:"Content Services",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:11,function:"Corporate Management",employee:"Sandeep Varghese",specialisation:"Corporate Management",allocationStatus:"Corporate Management",allocationPct:null,notes:""},
+  {id:12,function:"Creative Services",employee:"Mohammed Asfaan",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC Poland"},
+  {id:13,function:"Creative Services",employee:"Senthil S",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC North America"},
+  {id:14,function:"Creative Services",employee:"Sibiraj Bastin",specialisation:"Creative Services",allocationStatus:"Practice Lead",allocationPct:null,notes:""},
+  {id:15,function:"Creative Services",employee:"Aathimoorthy N",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC North America"},
+  {id:16,function:"Creative Services",employee:"Athithan R",specialisation:"Creative Services",allocationStatus:"Partially Available",allocationPct:50,notes:"Assembly SG_Banyan"},
+  {id:17,function:"Creative Services",employee:"Goushe Basha",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC Poland"},
+  {id:18,function:"Creative Services",employee:"Mukesh Rajendrababu",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC Poland"},
+  {id:19,function:"Creative Services",employee:"Ragupathy T",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"FTE Engagement"},
+  {id:20,function:"Creative Services",employee:"Susheel Ivan",specialisation:"Creative Services",allocationStatus:"FTE Engagement",allocationPct:100,notes:"ADC Poland"},
+  {id:21,function:"Marketing Services",employee:"K N Karthick Kumar",specialisation:"Marketing Services",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:22,function:"Marketing Services",employee:"Vimalkiran Sambath",specialisation:"Marketing Services",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:23,function:"Marketing Services",employee:"Premananth R",specialisation:"Marketing Services",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:24,function:"Operations",employee:"Mathangi Narayanan",specialisation:"Project Management",allocationStatus:"Project Management",allocationPct:null,notes:""},
+  {id:25,function:"Operations",employee:"Reshma Devi",specialisation:"Project Management",allocationStatus:"Project Management",allocationPct:null,notes:""},
+  {id:26,function:"Operations",employee:"Sathish Kumar R",specialisation:"System Admin",allocationStatus:"System Admin",allocationPct:null,notes:""},
+  {id:27,function:"Operations",employee:"Vijayakumar G",specialisation:"System Admin",allocationStatus:"System Admin",allocationPct:null,notes:""},
+  {id:28,function:"People Practices",employee:"Vishnukumar Alaguraj",specialisation:"People Practices",allocationStatus:"People Practices",allocationPct:null,notes:""},
+  {id:29,function:"People Practices",employee:"Deepika Santosh",specialisation:"People Practices",allocationStatus:"People Practices",allocationPct:null,notes:""},
+  {id:30,function:"Technology Services",employee:"Karthika Balakrishnan",specialisation:"Back End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:31,function:"Technology Services",employee:"Karthikraja Rajan",specialisation:"Back End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:32,function:"Technology Services",employee:"Ramprasad Ramakrishnan",specialisation:"Back End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:33,function:"Technology Services",employee:"Sathishkumar Sekar",specialisation:"Back End",allocationStatus:"FTE Engagement",allocationPct:100,notes:"AMP"},
+  {id:34,function:"Technology Services",employee:"A Baskar",specialisation:"Back End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:35,function:"Technology Services",employee:"Deivendran P",specialisation:"Front End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:36,function:"Technology Services",employee:"Amit Kumar Baskey",specialisation:"Back End",allocationStatus:"FTE Engagement",allocationPct:100,notes:"AMP"},
+  {id:37,function:"Technology Services",employee:"Dinesh Pandi",specialisation:"Back End",allocationStatus:"Available",allocationPct:null,notes:"FloatX"},
+  {id:38,function:"Technology Services",employee:"Jayalakshmi T",specialisation:"Back End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:39,function:"Technology Services",employee:"Nandu Krishna",specialisation:"Front End",allocationStatus:"Available",allocationPct:null,notes:"FloatX"},
+  {id:40,function:"Technology Services",employee:"Ashok Kumar Buddhan",specialisation:"Front End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:41,function:"Technology Services",employee:"Gowshick Thiruvarasu",specialisation:"Front End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:42,function:"Technology Services",employee:"Srinivasan P",specialisation:"Practice Lead",allocationStatus:"Practice Lead",allocationPct:null,notes:""},
+  {id:43,function:"Technology Services",employee:"Dilipkumar Chellaboina",specialisation:"DevOps",allocationStatus:"DevOps",allocationPct:null,notes:"Multiple Retainers/AMCs"},
+  {id:44,function:"Technology Services",employee:"Dinesh Kumar D",specialisation:"Testing",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:45,function:"Technology Services",employee:"Karthi Kumar M",specialisation:"Back End",allocationStatus:"Available",allocationPct:null,notes:"Audience Hub, Monthly Reports"},
+  {id:46,function:"Technology Services",employee:"Keerthana Ponnaiyan",specialisation:"DevOps",allocationStatus:"DevOps",allocationPct:null,notes:"Multiple Retainers/AMCs"},
+  {id:47,function:"Technology Services",employee:"Malathi P",specialisation:"Testing",allocationStatus:"Partially Available",allocationPct:50,notes:""},
+  {id:48,function:"Technology Services",employee:"Murugan H",specialisation:"Back End",allocationStatus:"FTE Engagement",allocationPct:100,notes:"AMP"},
+  {id:49,function:"Technology Services",employee:"Prithiga G",specialisation:"Testing",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:50,function:"Technology Services",employee:"Raghunath T",specialisation:"Back End",allocationStatus:"Available",allocationPct:null,notes:"FloatX Support"},
+  {id:51,function:"Technology Services",employee:"Robin R",specialisation:"Back End",allocationStatus:"India Business",allocationPct:100,notes:""},
+  {id:52,function:"Technology Services",employee:"Vinoth Kumar T",specialisation:"Back End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:53,function:"Technology Services",employee:"Prateep Kumar S",specialisation:"Back End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:54,function:"Technology Services",employee:"Vignesh Panneer Selvam",specialisation:"Back End",allocationStatus:"Available",allocationPct:0,notes:""},
+  {id:55,function:"Finance",employee:"Duraipandi Paraman",specialisation:"Finance",allocationStatus:"Finance",allocationPct:null,notes:""},
+];
+let nextId=56,editingId=null,sortKey=null,sortAsc=true;
+
+function getCat(e){
+  const s=e.allocationStatus;
+  if(["Client Servicing","Project Management","Practice Lead","System Admin","People Practices","Corporate Management","Finance","DevOps"].includes(s))return"Management";
+  if(s==="Available")return"Available";
+  if(s==="Partially Available")return"Partial";
+  return"Allocated";
+}
+function catCol(c){return{Available:"var(--available)",Partial:"var(--partial)",Allocated:"var(--alloc)",Management:"var(--mgmt)"}[c]||"var(--mgmt)"}
+function fnCls(fn){return{"Account Management":"fn-account","Content Services":"fn-content","Creative Services":"fn-creative","Marketing Services":"fn-marketing","Technology Services":"fn-technology","Operations":"fn-operations","People Practices":"fn-people","Corporate Management":"fn-corporate","Finance":"fn-finance"}[fn]||""}
+function allocCell(pct,cat){
+  if(pct===null||pct===undefined)return`<span style="color:var(--text-4);font-size:12px">—</span>`;
+  const c=catCol(cat);
+  return`<div class="alloc-cell"><div class="alloc-bg"><div class="alloc-fill" style="width:${pct}%;background:${c}"></div></div><span class="alloc-pct" style="color:${c}">${pct}%</span></div>`;
+}
+function statusBadge(e){
+  const cat=getCat(e),dc={Available:"d-av",Partial:"d-pt",Allocated:"d-al",Management:"d-mg"}[cat];
+  const lbl=cat==="Allocated"?e.allocationStatus:cat;
+  return`<div class="sdot"><div class="dot ${dc}"></div>${lbl}</div>`;
+}
+
+function renderStats(){
+  const t=employees.length,av=employees.filter(e=>getCat(e)==="Available").length,
+        pt=employees.filter(e=>getCat(e)==="Partial").length,
+        al=employees.filter(e=>getCat(e)==="Allocated").length,
+        mg=employees.filter(e=>getCat(e)==="Management").length;
+  const cards=[
+    {lbl:"Total Headcount",val:t,sub:"across all functions",col:"var(--accent)",acc:"#1a56db"},
+    {lbl:"Available",val:av,sub:"ready for assignment",col:"var(--available)",acc:"#0a7c5c"},
+    {lbl:"Partially Available",val:pt,sub:"have remaining capacity",col:"var(--partial)",acc:"#b45309"},
+    {lbl:"Fully Allocated",val:al,sub:"on active engagements",col:"var(--alloc)",acc:"#1a56db"},
+    {lbl:"Mgmt / Support",val:mg,sub:"no fixed allocation %",col:"var(--mgmt)",acc:"#4b5563"},
+  ];
+  document.getElementById("statsRow").innerHTML=cards.map(c=>`<div class="stat-card"><div class="stat-accent" style="background:${c.acc}"></div><div class="stat-label">${c.lbl}</div><div class="stat-value" style="color:${c.col}">${c.val}</div><div class="stat-sub">${c.sub}</div></div>`).join("");
+}
+
+function renderDonut(){
+  const cats=["Available","Partial","Allocated","Management"],
+        cols=["#0a7c5c","#b45309","#1a56db","#6b7280"],
+        counts=cats.map(c=>employees.filter(e=>getCat(e)===c).length),
+        total=counts.reduce((a,b)=>a+b,0);
+  let a=-Math.PI/2,paths="";
+  const cx=60,cy=60,r=48,ir=30;
+  counts.forEach((n,i)=>{
+    if(!n)return;
+    const sw=(n/total)*2*Math.PI,
+          x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),
+          x2=cx+r*Math.cos(a+sw),y2=cy+r*Math.sin(a+sw),
+          xi1=cx+ir*Math.cos(a),yi1=cy+ir*Math.sin(a),
+          xi2=cx+ir*Math.cos(a+sw),yi2=cy+ir*Math.sin(a+sw),
+          lg=sw>Math.PI?1:0;
+    paths+=`<path d="M${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${ir},${ir} 0 ${lg},0 ${xi1},${yi1} Z" fill="${cols[i]}"/>`;
+    a+=sw;
+  });
+  document.getElementById("donutSvg").innerHTML=paths+`<text x="60" y="56" text-anchor="middle" font-family="Playfair Display,serif" font-size="18" font-weight="700" fill="#111827">${total}</text><text x="60" y="70" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9" fill="#9ca3af">TOTAL</text>`;
+  document.getElementById("donutLegend").innerHTML=cats.map((c,i)=>`<div class="legend-item"><div class="legend-sw" style="background:${cols[i]}"></div><span class="legend-lbl">${c}</span><span class="legend-n" style="color:${cols[i]}">${counts[i]}</span></div>`).join("");
+}
+
+function renderFnBars(){
+  const fns=[...new Set(employees.map(e=>e.function))].sort();
+  const max=Math.max(...fns.map(f=>employees.filter(e=>e.function===f).length));
+  const pal=["#1a56db","#0a7c5c","#6d28d9","#b45309","#9d174d","#4b5563","#92400e","#374151","#4338ca"];
+  document.getElementById("fnBreakdown").innerHTML=fns.map((f,i)=>{
+    const n=employees.filter(e=>e.function===f).length;
+    return`<div class="fn-row"><div class="fn-row-lbl">${f.replace(" Services","").replace(" Management","")}</div><div class="fn-bar-bg"><div class="fn-bar" style="width:${(n/max)*100}%;background:${pal[i%pal.length]}"></div></div><div class="fn-row-n" style="color:${pal[i%pal.length]}">${n}</div></div>`;
+  }).join("");
+}
+
+function renderAvailGrid(){
+  const list=employees.filter(e=>["Available","Partial"].includes(getCat(e)));
+  document.getElementById("availGrid").innerHTML=list.length?list.map(e=>{
+    const cat=getCat(e),pct=e.allocationPct??0,free=100-pct,c=catCol(cat),tag=cat==="Partial"?"tag-partial":"tag-avail";
+    return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg"><div class="av-meter-fill" style="width:${free}%;background:${c}"></div></div><div class="av-footer"><span class="av-free" style="color:${c}">${free}% free</span><span class="stag ${tag}">${cat==="Partial"?"Partial":"Available"}</span></div></div>`;
+  }).join(""):`<div class="empty-state">No available capacity found.</div>`;
+}
+
+function renderTable(){
+  populateFilters();
+  let data=[...employees];
+  const q=(document.getElementById("searchInput")?.value||"").toLowerCase(),
+        fn=document.getElementById("fnFilter")?.value||"",
+        st=document.getElementById("statusFilter")?.value||"",
+        sp=document.getElementById("specFilter")?.value||"";
+  if(q)data=data.filter(e=>[e.employee,e.function,e.specialisation,e.allocationStatus,e.notes||""].join(" ").toLowerCase().includes(q));
+  if(fn)data=data.filter(e=>e.function===fn);
+  if(sp)data=data.filter(e=>e.specialisation===sp);
+  if(st)data=data.filter(e=>{const c=getCat(e);if(st==="Available")return c==="Available";if(st==="Partial")return c==="Partial";if(st==="Allocated")return c==="Allocated";if(st==="FTE")return e.allocationStatus==="FTE Engagement";if(st==="Management")return c==="Management";return true;});
+  if(sortKey)data.sort((a,b)=>{let va=a[sortKey]??"",vb=b[sortKey]??"";if(typeof va==="number")return sortAsc?va-vb:vb-va;return sortAsc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));});
+  document.getElementById("rosterTbody").innerHTML=data.length?data.map(e=>`<tr><td><strong style="color:var(--text)">${e.employee}</strong></td><td><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></td><td style="color:var(--text-2)">${e.specialisation}</td><td>${statusBadge(e)}</td><td>${allocCell(e.allocationPct,getCat(e))}</td><td class="notes-cell" title="${e.notes||""}">${e.notes||"—"}</td><td><button class="btn-edit" onclick="openEditModal(${e.id})">Edit</button></td></tr>`).join(""):`<tr><td colspan="7"><div class="empty-state">No results match your filters.</div></td></tr>`;
+}
+
+function sortTable(k){if(sortKey===k)sortAsc=!sortAsc;else{sortKey=k;sortAsc=true;}renderTable();}
+
+function populateFilters(){
+  const fn=document.getElementById("fnFilter"),sp=document.getElementById("specFilter"),af=document.getElementById("availFnFilter");
+  if(fn&&fn.options.length<=1)[...new Set(employees.map(e=>e.function))].sort().forEach(f=>{fn.add(new Option(f,f));if(af)af.add(new Option(f,f));});
+  if(sp&&sp.options.length<=1)[...new Set(employees.map(e=>e.specialisation))].sort().forEach(s=>sp.add(new Option(s,s)));
+}
+
+function renderAvailability(){
+  const fn=document.getElementById("availFnFilter")?.value||"";
+  const list=fn?employees.filter(e=>e.function===fn):employees;
+  const tm={Available:"tag-avail",Partial:"tag-partial",Allocated:"tag-alloc",Management:"tag-mgmt"};
+  document.getElementById("availFullGrid").innerHTML=list.map(e=>{
+    const cat=getCat(e),pct=e.allocationPct,free=pct!==null?100-pct:null,c=catCol(cat);
+    return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg">${free!==null?`<div class="av-meter-fill" style="width:${free}%;background:${c}"></div>`:""}</div><div class="av-footer"><span class="av-free" style="color:${c}">${free!==null?free+"% free":"N/A"}</span><span class="stag ${tm[cat]}">${cat}</span></div>${e.notes?`<div style="margin-top:8px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);padding-top:7px">${e.notes}</div>`:""}</div>`;
+  }).join("");
+}
+
+function renderForecast(){
+  const fns=[...new Set(employees.map(e=>e.function))].sort();
+  document.getElementById("forecastTbody").innerHTML=fns.map(fn=>{
+    const g=employees.filter(e=>e.function===fn);
+    const al=g.filter(e=>getCat(e)==="Allocated").length,pt=g.filter(e=>getCat(e)==="Partial").length,
+          av=g.filter(e=>getCat(e)==="Available").length,mg=g.filter(e=>getCat(e)==="Management").length;
+    return`<tr><td><span class="fn-pill ${fnCls(fn)}">${fn}</span></td><td style="font-weight:700">${g.length}</td><td><span style="color:var(--alloc);font-weight:600">${al}</span></td><td><span style="color:var(--partial);font-weight:600">${pt}</span></td><td><span style="color:var(--available);font-weight:600">${av}</span></td><td style="color:var(--mgmt)">${mg}</td><td><strong style="color:var(--available)">${(av+pt*.5).toFixed(1)} FTE</strong></td></tr>`;
+  }).join("");
+}
+
+function openEditModal(id){
+  const e=employees.find(x=>x.id===id);if(!e)return;
+  editingId=id;
+  document.getElementById("modalTitle").textContent="Edit Employee";
+  document.getElementById("modalSub").textContent=e.employee;
+  document.getElementById("f_employee").value=e.employee;
+  document.getElementById("f_function").value=e.function;
+  document.getElementById("f_specialisation").value=e.specialisation;
+  document.getElementById("f_allocationStatus").value=e.allocationStatus;
+  document.getElementById("f_allocationPct").value=e.allocationPct??"";
+  document.getElementById("f_notes").value=e.notes||"";
+  document.getElementById("editModal").classList.add("open");
+}
+function openAddModal(){
+  editingId=null;
+  document.getElementById("modalTitle").textContent="Add Employee";
+  document.getElementById("modalSub").textContent="Fill in the details below";
+  ["f_employee","f_specialisation","f_allocationPct","f_notes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("editModal").classList.add("open");
+}
+function closeModal(){document.getElementById("editModal").classList.remove("open");}
+function saveEmployee(){
+  const emp={
+    id:editingId??nextId++,
+    employee:document.getElementById("f_employee").value.trim(),
+    function:document.getElementById("f_function").value,
+    specialisation:document.getElementById("f_specialisation").value.trim(),
+    allocationStatus:document.getElementById("f_allocationStatus").value,
+    allocationPct:document.getElementById("f_allocationPct").value!==""?Number(document.getElementById("f_allocationPct").value):null,
+    notes:document.getElementById("f_notes").value.trim(),
+  };
+  if(!emp.employee)return;
+  if(editingId){const i=employees.findIndex(e=>e.id===editingId);employees[i]=emp;}else employees.push(emp);
+  closeModal();refreshAll();
+  showToast(editingId?"✓ Employee updated successfully":"✓ Employee added successfully");
+}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
+
+function switchTab(tab){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  document.querySelectorAll(".tab-btn").forEach(b=>{if(b.getAttribute("onclick").includes("'"+tab+"'"))b.classList.add("active");});
+  if(tab==="roster")renderTable();
+  if(tab==="availability"){populateFilters();renderAvailability();}
+  if(tab==="forecast")renderForecast();
+}
+
+function refreshAll(){renderStats();renderDonut();renderFnBars();renderAvailGrid();renderTable();renderAvailability();renderForecast();}
+
+// ── ADMIN / PASSWORD ─────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = "teampulse2025"; // ← Change this to your own password
+let isAdmin = false;
+
+function handleAdminClick() {
+  if (isAdmin) { lockAdmin(); } else { openPwModal(); }
+}
+function openPwModal() {
+  document.getElementById("pwInput").value = "";
+  document.getElementById("pwError").textContent = "";
+  document.getElementById("pwModal").classList.add("open");
+  setTimeout(() => document.getElementById("pwInput").focus(), 200);
+}
+function closePwModal() { document.getElementById("pwModal").classList.remove("open"); }
+function submitPassword() {
+  const val = document.getElementById("pwInput").value;
+  if (val === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.body.classList.add("admin-mode");
+    document.getElementById("adminBtn").classList.add("active");
+    document.getElementById("adminBtnLabel").textContent = "Lock";
+    document.getElementById("adminBtn").querySelector(".lock-icon").textContent = "🔓";
+    closePwModal();
+    renderTable(); // re-render to show edit buttons
+    showToast("✓ Admin mode enabled — edit buttons are now visible");
+  } else {
+    document.getElementById("pwError").textContent = "Incorrect password. Try again.";
+    document.getElementById("pwInput").value = "";
+    document.getElementById("pwInput").focus();
+  }
+}
+function lockAdmin() {
+  isAdmin = false;
+  document.body.classList.remove("admin-mode");
+  document.getElementById("adminBtn").classList.remove("active");
+  document.getElementById("adminBtnLabel").textContent = "Admin";
+  document.getElementById("adminBtn").querySelector(".lock-icon").textContent = "🔒";
+  renderTable();
+  showToast("🔒 Admin mode locked");
+}
+
+document.getElementById("currentDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"short",year:"numeric",month:"long",day:"numeric"});
+renderStats();renderDonut();renderFnBars();renderAvailGrid();
+</script>
+</body>
+</html>
