@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assembly Chennai — Allocation Dashboard</title>
+<title>Assembly Chennai — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --bg:#f4f5f7;--surface:#fff;--surface2:#f8f9fb;--border:#e4e7ed;--border2:#ced3dc;
   --accent:#1a56db;--accent-lt:#eff4ff;--accent-md:#c3d3fd;
   --available:#0a7c5c;--avail-lt:#e6f7f2;
@@ -18,379 +18,357 @@
   --red:#ef4444;--red-lt:#fef2f2;--red-bd:#fca5a5;
   --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
-  --shadow-lg:0 12px 32px rgba(0,0,0,.10),0 4px 8px rgba(0,0,0,.05);
+  --shadow-lg:0 16px 40px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06);
   --r:12px;--rs:8px;
-  --font-d:'Playfair Display',Georgia,serif;
-  --font-b:'Outfit',sans-serif;
+  --font-d:'Playfair Display',Georgia,serif;--font-b:'Outfit',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;min-height:100vh}
 
+/* ═══ LOGIN SCREEN ═══ */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1a1f35 0%,#0f172a 50%,#1e3a8a 100%);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-card{background:#fff;border-radius:20px;padding:44px 48px;width:420px;max-width:95vw;box-shadow:var(--shadow-lg);text-align:center}
+.login-logo{width:48px;height:48px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 12px rgba(26,86,219,.3)}
+.login-logo svg{width:24px;height:24px;fill:#fff}
+.login-title{font-family:var(--font-d);font-size:24px;font-weight:700;margin-bottom:4px}
+.login-title span{color:var(--accent)}
+.login-sub{font-size:13px;color:var(--text-3);margin-bottom:32px}
+.login-form-row{margin-bottom:16px;text-align:left}
+.login-label{display:block;font-size:11.5px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.login-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:var(--rs);padding:11px 14px;font-family:var(--font-b);font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s}
+.login-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:#fff}
+.login-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:12px;font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .15s,box-shadow .15s;box-shadow:0 2px 8px rgba(26,86,219,.3)}
+.login-btn:hover{background:#1447c0}
+.login-error{font-size:12px;color:#dc2626;margin-top:10px;min-height:18px;text-align:center}
+.login-footer{font-size:11.5px;color:var(--text-4);margin-top:24px}
+
+/* ═══ APP SHELL (hidden until login) ═══ */
+#appShell{display:none}
+
 /* TOPBAR */
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex;align-items:stretch;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
-.topbar-left{display:flex;align-items:center;gap:14px}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:12px}
 .brand-icon{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .brand-icon svg{width:18px;height:18px;fill:#fff}
-.brand-name{font-family:var(--font-d);font-size:19px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.brand-name{font-family:var(--font-d);font-size:19px;font-weight:700;letter-spacing:-.3px}
 .brand-name span{color:var(--accent)}
-.topbar-divider{width:1px;background:var(--border);height:26px;margin:0 6px}
+.topbar-div{width:1px;background:var(--border);height:26px;margin:0 4px}
 .topbar-sub{font-size:12px;color:var(--text-3)}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.live-badge{display:flex;align-items:center;gap:6px;background:var(--avail-lt);color:var(--available);border:1px solid #a7f0d8;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.4px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--avail-lt);color:var(--available);border:1px solid #a7f0d8;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--available);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .topbar-date{font-size:12px;color:var(--text-3)}
-.admin-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);color:var(--text-3);border-radius:var(--rs);padding:6px 14px;font-family:var(--font-b);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.user-pill{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.user-pill:hover{border-color:var(--border2)}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.admin-btn{display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);color:var(--text-3);border-radius:var(--rs);padding:6px 12px;font-family:var(--font-b);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
 .admin-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
 .admin-btn.active{background:var(--red-lt);border-color:var(--red-bd);color:var(--red)}
 
 /* ADMIN BANNER */
-.admin-banner{background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 36px;font-size:12px;color:#92400e;display:none;align-items:center;gap:8px;font-weight:500}
+.admin-banner{background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 32px;font-size:12px;color:#92400e;display:none;align-items:center;justify-content:space-between;font-weight:500}
 body.admin-mode .admin-banner{display:flex}
+.admin-banner-actions{display:flex;gap:6px}
 
-/* TAB NAV */
-.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex}
-.tab-btn{background:none;border:none;cursor:pointer;padding:14px 20px;font-family:var(--font-b);font-size:13px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .18s,border-color .18s;display:flex;align-items:center;gap:7px;white-space:nowrap}
-.tab-btn:hover{color:var(--text-2)}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+/* SUPER NAV */
+.super-nav{background:var(--surface);border-bottom:2px solid #e4e7ed;padding:0 32px;display:flex;overflow-x:auto}
+.super-tab{background:none;border:none;cursor:pointer;padding:13px 16px;font-family:var(--font-b);font-size:12.5px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative}
+.super-tab:hover{color:var(--text-2)}
+.super-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.hide-tab-btn{display:none;position:absolute;top:4px;right:-2px;background:none;border:none;cursor:pointer;font-size:9px;color:var(--text-4);padding:2px}
+body.admin-mode .hide-tab-btn{display:block}
 
-/* LAYOUT */
-.main{padding:28px 36px;max-width:1600px}
-.tab-panel{display:none}
-.tab-panel.active{display:block;animation:fi .2s ease}
-@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s;position:relative;overflow:hidden}
-.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.stat-accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
-.stat-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
-.stat-value{font-family:var(--font-d);font-size:34px;font-weight:700;line-height:1;margin-bottom:6px}
-.stat-sub{font-size:11.5px;color:var(--text-3)}
+/* MAIN */
+.main{padding:24px 32px;max-width:1700px}
 
 /* SECTION */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.section-title{font-family:var(--font-d);font-size:17px;font-weight:600}
+.section-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.section-title{font-family:var(--font-d);font-size:16px;font-weight:600}
+.edit-title-btn{display:none;background:none;border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;color:var(--text-4);transition:all .15s;font-family:var(--font-b);margin-left:6px}
+.edit-title-btn:hover{border-color:var(--accent);color:var(--accent)}
+body.admin-mode .edit-title-btn{display:inline-flex;align-items:center}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:box-shadow .18s,transform .18s}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
+.stat-label{font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.stat-value{font-family:var(--font-d);font-size:30px;font-weight:700;line-height:1;margin-bottom:5px}
+.stat-sub{font-size:11px;color:var(--text-3)}
 
 /* CHARTS */
-.charts-row{display:grid;grid-template-columns:380px 1fr;gap:20px;margin-bottom:24px}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm)}
-.chart-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:20px}
-.donut-wrap{display:flex;align-items:center;gap:32px}
-.donut-legend{flex:1;display:flex;flex-direction:column;gap:11px}
-.legend-item{display:flex;align-items:center;gap:10px}
-.legend-sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
-.legend-lbl{font-size:12.5px;color:var(--text-2);flex:1}
-.legend-n{font-size:13px;font-weight:700}
-.fn-breakdown{display:flex;flex-direction:column;gap:11px}
-.fn-row{display:flex;align-items:center;gap:12px}
-.fn-row-lbl{width:140px;font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.fn-bar-bg{flex:1;height:7px;background:var(--bg);border-radius:10px}
+.charts-row{display:grid;grid-template-columns:340px 1fr;gap:16px;margin-bottom:20px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm)}
+.chart-label{font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:16px}
+.donut-wrap{display:flex;align-items:center;gap:24px}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:9px}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-sw{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.legend-lbl{font-size:12px;color:var(--text-2);flex:1}
+.legend-n{font-size:12.5px;font-weight:700}
+.fn-breakdown{display:flex;flex-direction:column;gap:9px}
+.fn-row{display:flex;align-items:center;gap:10px}
+.fn-row-lbl{width:120px;font-size:11.5px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.fn-bar-bg{flex:1;height:6px;background:var(--bg);border-radius:10px}
 .fn-bar{height:100%;border-radius:10px}
-.fn-row-n{font-size:12px;font-weight:600;color:var(--text-3);min-width:22px;text-align:right}
+.fn-row-n{font-size:11.5px;font-weight:600;color:var(--text-3);min-width:20px;text-align:right}
 
 /* NOTICE STRIP */
-.notice-strip{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--rs);padding:12px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:10px;position:relative}
-.notice-icon{font-size:15px;flex-shrink:0;margin-top:1px}
-.notice-text{font-size:12.5px;color:#78350f;line-height:1.6;flex:1}
+.notice-strip{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--rs);padding:11px 15px;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px}
+.notice-text{font-size:12px;color:#78350f;line-height:1.6;flex:1}
 .notice-text strong{font-weight:600;color:#92400e}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.chip{background:#fff;border:1px solid #fde68a;color:#92400e;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:5px}
-.chip-del{background:none;border:none;cursor:pointer;color:#b45309;font-size:13px;line-height:1;padding:0;display:none}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{background:#fff;border:1px solid #fde68a;color:#92400e;border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.chip-del{background:none;border:none;cursor:pointer;color:#b45309;font-size:12px;line-height:1;padding:0;display:none}
 body.admin-mode .chip-del{display:inline}
 
-/* PENDING TASKS */
-.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
-.pending-card{background:var(--surface);border:1px solid var(--red-bd);border-left:4px solid var(--red);border-radius:var(--r);padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;transition:box-shadow .18s,transform .18s;position:relative}
-.pending-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.pending-dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+/* PENDING */
+.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:22px}
+.pending-card{background:var(--surface);border:1px solid var(--red-bd);border-left:4px solid var(--red);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:12px}
+.pending-dot{width:9px;height:9px;border-radius:50%;background:var(--red);flex-shrink:0;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
 .pending-info{flex:1}
-.pending-name{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
-.pending-tag-pill{display:inline-block;background:var(--red-lt);color:#dc2626;border:1px solid var(--red-bd);border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:600;letter-spacing:.2px}
-.pending-actions{display:none;gap:6px;flex-shrink:0}
+.pending-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.pending-tag-pill{display:inline-block;background:var(--red-lt);color:#dc2626;border:1px solid var(--red-bd);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600}
+.pending-actions{display:none;gap:5px;flex-shrink:0}
 body.admin-mode .pending-actions{display:flex}
-.btn-icon{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--text-3);transition:all .15s;font-family:var(--font-b)}
-.btn-icon:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
-.btn-icon.del:hover{border-color:var(--red-bd);color:var(--red);background:var(--red-lt)}
 
 /* AVAIL GRID */
-.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.avail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s}
-.avail-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.av-name{font-size:13.5px;font-weight:600;margin-bottom:2px}
-.av-spec{font-size:11.5px;color:var(--text-3);margin-bottom:10px}
-.av-fn{margin-bottom:10px}
-.av-meter-bg{height:5px;background:var(--bg);border-radius:10px;margin-bottom:10px}
+.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px}
+.avail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s}
+.avail-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.av-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.av-spec{font-size:11px;color:var(--text-3);margin-bottom:7px}
+.av-fn{margin-bottom:7px}
+.av-meter-bg{height:4px;background:var(--bg);border-radius:10px;margin-bottom:7px}
 .av-meter-fill{height:100%;border-radius:10px}
 .av-footer{display:flex;justify-content:space-between;align-items:center}
-.av-free{font-size:12.5px;font-weight:700}
+.av-free{font-size:12px;font-weight:700}
 
-/* FN PILLS */
-.fn-pill{display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+/* PILLS */
+.fn-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
 .fn-account{background:#eff4ff;color:#1a56db}.fn-content{background:#e6f7f2;color:#0a7c5c}
 .fn-creative{background:#f0ebff;color:#6d28d9}.fn-marketing{background:#fef3e2;color:#b45309}
 .fn-technology{background:#fce8f3;color:#9d174d}.fn-operations{background:#f1f2f4;color:#4b5563}
 .fn-people{background:#fff8e1;color:#92400e}.fn-corporate{background:#f1f2f4;color:#374151}
 .fn-finance{background:#eef2ff;color:#4338ca}
-
-.stag{font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.2px}
-.tag-avail{background:var(--avail-lt);color:var(--available)}
-.tag-partial{background:var(--partial-lt);color:var(--partial)}
-.tag-alloc{background:var(--alloc-lt);color:var(--alloc)}
-.tag-fte{background:var(--fte-lt);color:var(--fte)}
-.tag-mgmt{background:var(--mgmt-lt);color:var(--mgmt)}
-
-.sdot{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+.stag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.tag-avail{background:var(--avail-lt);color:var(--available)}.tag-partial{background:var(--partial-lt);color:var(--partial)}
+.tag-alloc{background:var(--alloc-lt);color:var(--alloc)}.tag-mgmt{background:var(--mgmt-lt);color:var(--mgmt)}
+.sdot{display:inline-flex;align-items:center;gap:6px;font-size:12px}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .d-av{background:var(--available)}.d-pt{background:var(--partial)}.d-al{background:var(--alloc)}.d-mg{background:var(--mgmt)}
+.reg-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.3px}
+.reg-ANZ{background:#e0f2fe;color:#0369a1}.reg-APAC{background:#f0fdf4;color:#15803d}
+.reg-EUR{background:#fdf4ff;color:#7e22ce}.reg-INDIA{background:#fff7ed;color:#c2410c}
+.reg-NAM{background:#fef2f2;color:#b91c1c}.reg-Internal{background:#f1f5f9;color:#475569}
+.rev-badge{background:#dcfce7;color:#15803d;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700}
+.cost-badge{background:#fef9c3;color:#854d0e;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700}
 
 /* FILTERS */
-.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
-.filter-input,.filter-select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:8px 13px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;box-shadow:var(--shadow-sm)}
-.filter-input{min-width:240px}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filter-input,.filter-select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:7px 12px;font-family:var(--font-b);font-size:12.5px;outline:none;transition:border-color .15s;box-shadow:var(--shadow-sm)}
+.filter-input{min-width:210px}
 .filter-input:focus,.filter-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
 
 /* TABLE */
-.table-wrap{border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)}
+.table-wrap{border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm);overflow-x:auto}
 table{width:100%;border-collapse:collapse;background:var(--surface)}
-thead th{background:var(--surface2);padding:11px 15px;text-align:left;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .12s}
+thead th{background:var(--surface2);padding:10px 13px;text-align:left;font-size:10.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .12s}
 thead th:hover{background:#eef0f4}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#f8f9fb}
-tbody td{padding:11px 15px;vertical-align:middle}
-.alloc-cell{display:flex;align-items:center;gap:10px}
-.alloc-bg{width:72px;height:5px;background:var(--bg);border-radius:10px;flex-shrink:0}
+tbody td{padding:10px 13px;vertical-align:middle;white-space:nowrap}
+.alloc-cell{display:flex;align-items:center;gap:8px}
+.alloc-bg{width:55px;height:4px;background:var(--bg);border-radius:10px;flex-shrink:0}
 .alloc-fill{height:100%;border-radius:10px}
-.alloc-pct{font-size:12px;font-weight:700;min-width:34px;text-align:right}
-.notes-cell{font-size:12px;color:var(--text-3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alloc-pct{font-size:11.5px;font-weight:700;min-width:30px;text-align:right}
+.notes-cell{font-size:11.5px;color:var(--text-3);max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amount-cell{font-size:12px;font-weight:600;color:var(--available)}
 
 /* BUTTONS */
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:9px 18px;font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,box-shadow .15s;box-shadow:0 2px 6px rgba(26,86,219,.25)}
-.btn-primary:hover{background:#1447c0;box-shadow:0 4px 12px rgba(26,86,219,.3)}
-.btn-edit{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:6px;padding:4px 11px;font-size:11.5px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s;display:none}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:8px 16px;font-family:var(--font-b);font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .15s;box-shadow:0 2px 5px rgba(26,86,219,.22)}
+.btn-primary:hover{background:#1447c0}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-edit{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:6px;padding:3px 9px;font-size:10.5px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s;display:none}
 body.admin-mode .btn-edit{display:inline-block}
-.btn-cancel{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:var(--rs);padding:9px 18px;font-size:13px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s}
+.btn-edit:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+.btn-del{background:none;border:1px solid var(--border);color:var(--text-3);border-radius:6px;padding:3px 9px;font-size:10.5px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s;display:none}
+body.admin-mode .btn-del{display:inline-block}
+.btn-del:hover{border-color:var(--red-bd);color:var(--red);background:var(--red-lt)}
+.btn-cancel{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);border-radius:var(--rs);padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--font-b);font-weight:500;transition:all .15s}
 .btn-cancel:hover{border-color:var(--border2)}
+.btn-icon{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--text-3);transition:all .15s;font-family:var(--font-b)}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+.btn-icon.del:hover{border-color:var(--red-bd);color:var(--red);background:var(--red-lt)}
 .edit-only{display:none!important}
-body.admin-mode .edit-only{display:flex!important}
+body.admin-mode .edit-only{display:inline-flex!important}
 
-/* FORECAST NOTE — editable */
-.forecast-note{background:var(--accent-lt);border:1px solid var(--accent-md);border-radius:var(--rs);padding:13px 18px;font-size:12.5px;color:#1e3a8a;line-height:1.65;margin-bottom:22px;position:relative}
-.forecast-note strong{font-weight:700}
-.forecast-note ul{margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:6px;list-style:disc}
+/* FORECAST NOTE */
+.forecast-note{background:var(--accent-lt);border:1px solid var(--accent-md);border-radius:var(--rs);padding:13px 18px;font-size:12px;color:#1e3a8a;line-height:1.65;margin-bottom:18px}
+.forecast-note ul{margin-top:8px;padding-left:18px;display:flex;flex-direction:column;gap:5px;list-style:disc}
 .note-item{display:flex;align-items:flex-start;gap:8px}
 .note-item-text{flex:1}
-.note-item-del{background:none;border:none;cursor:pointer;color:#6b7280;font-size:14px;padding:0;line-height:1;display:none;flex-shrink:0;margin-top:1px}
+.note-item-del{background:none;border:none;cursor:pointer;color:var(--text-4);font-size:13px;padding:0;line-height:1;display:none;flex-shrink:0}
 body.admin-mode .note-item-del{display:inline}
 
 /* RETAINER CARDS */
-.retainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
-.retainer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm);transition:box-shadow .18s;position:relative}
-.retainer-card:hover{box-shadow:var(--shadow-md)}
-.ret-name{font-size:14px;font-weight:700;margin-bottom:3px}
-.ret-meta{font-size:11.5px;color:var(--text-3);margin-bottom:14px}
-.ret-alloc{display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border-radius:8px;padding:9px 14px}
-.ret-alloc-lbl{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
-.ret-alloc-val{font-family:var(--font-d);font-size:22px;font-weight:700}
-.card-admin-actions{position:absolute;top:12px;right:12px;display:none;gap:5px}
+.retainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:22px}
+.retainer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:17px 19px;box-shadow:var(--shadow-sm);position:relative}
+.ret-name{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.ret-meta{font-size:11px;color:var(--text-3);margin-bottom:11px}
+.ret-alloc{display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border-radius:8px;padding:8px 12px}
+.ret-alloc-lbl{font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+.ret-alloc-val{font-family:var(--font-d);font-size:20px;font-weight:700}
+.card-admin-actions{position:absolute;top:10px;right:10px;display:none;gap:4px}
 body.admin-mode .card-admin-actions{display:flex}
 
-/* MODALS SHARED */
+/* STAFFING */
+.staffing-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+.region-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+.region-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;box-shadow:var(--shadow-sm)}
+.region-card-val{font-family:var(--font-d);font-size:20px;font-weight:700;margin:6px 0 2px}
+.region-card-sub{font-size:11px;color:var(--text-3)}
+
+/* ADMIN PORTAL */
+.admin-portal-wrap{padding:24px 32px;max-width:1200px}
+.portal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px}
+.portal-tab{background:none;border:none;cursor:pointer;padding:10px 18px;font-family:var(--font-b);font-size:13px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.portal-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.portal-panel{display:none}
+.portal-panel.active{display:block}
+.user-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;box-shadow:var(--shadow-sm)}
+.user-row-info{display:flex;align-items:center;gap:12px}
+.user-big-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.user-row-name{font-weight:600;font-size:13.5px}
+.user-row-email{font-size:11.5px;color:var(--text-3)}
+.status-active{background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.status-pending{background:#fef9c3;color:#854d0e;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.status-disabled{background:var(--red-lt);color:#dc2626;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.history-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px}
+.history-row:last-child{border-bottom:none}
+.history-user{font-weight:600;min-width:130px}
+.history-time{color:var(--text-3);font-size:11.5px}
+.history-dur{background:var(--accent-lt);color:var(--accent);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600}
+
+/* MODALS */
 .modal-bg{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
 .modal-bg.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:30px 32px;width:500px;max-width:95vw;transform:translateY(10px) scale(.99);transition:transform .22s;border:1px solid var(--border)}
+.modal{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:28px 30px;width:480px;max-width:95vw;transform:translateY(10px) scale(.99);transition:transform .22s;border:1px solid var(--border)}
 .modal-bg.open .modal{transform:translateY(0) scale(1)}
-.modal-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:3px}
-.modal-sub{font-size:12.5px;color:var(--text-3);margin-bottom:22px}
-.form-row{margin-bottom:15px}
-.form-label{display:block;font-size:11.5px;font-weight:600;color:var(--text-2);margin-bottom:6px}
-.form-hint{font-size:11px;color:var(--text-4);font-weight:400}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:9px 13px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:var(--surface)}
-.form-textarea{resize:vertical;min-height:64px}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.modal-title{font-family:var(--font-d);font-size:19px;font-weight:700;margin-bottom:3px}
+.modal-sub{font-size:12px;color:var(--text-3);margin-bottom:18px}
+.form-row{margin-bottom:13px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:5px}
+.form-hint{font-size:10px;color:var(--text-4)}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:8px 12px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:#fff}
+.form-textarea{resize:vertical;min-height:56px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* PASSWORD MODAL */
+/* PW MODAL */
 .pw-modal-bg{position:fixed;inset:0;background:rgba(17,24,39,.5);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(3px)}
 .pw-modal-bg.open{opacity:1;pointer-events:all}
-.pw-modal{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:32px;width:380px;max-width:95vw;transform:translateY(10px);transition:transform .22s;border:1px solid var(--border);text-align:center}
+.pw-modal{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);padding:32px;width:360px;max-width:95vw;transform:translateY(10px);transition:transform .22s;text-align:center}
 .pw-modal-bg.open .pw-modal{transform:translateY(0)}
-.pw-icon{font-size:36px;margin-bottom:14px}
-.pw-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:6px}
-.pw-sub{font-size:12.5px;color:var(--text-3);margin-bottom:22px}
-.pw-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:11px 14px;font-family:var(--font-b);font-size:14px;outline:none;text-align:center;letter-spacing:3px;transition:border-color .15s,box-shadow .15s;margin-bottom:6px}
+.pw-icon{font-size:34px;margin-bottom:12px}
+.pw-title{font-family:var(--font-d);font-size:19px;font-weight:700;margin-bottom:4px}
+.pw-sub{font-size:12px;color:var(--text-3);margin-bottom:18px}
+.pw-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:10px 14px;font-family:var(--font-b);font-size:14px;outline:none;text-align:center;letter-spacing:3px;transition:border-color .15s;margin-bottom:6px}
 .pw-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
-.pw-error{font-size:12px;color:#dc2626;margin-bottom:14px;min-height:18px}
+.pw-error{font-size:12px;color:#dc2626;margin-bottom:12px;min-height:18px}
 .pw-actions{display:flex;gap:10px;justify-content:center;margin-top:4px}
 
 /* TOAST */
-.toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#fff;border-radius:10px;padding:12px 22px;font-size:13px;font-weight:500;z-index:300;transform:translateY(16px);opacity:0;transition:all .28s;pointer-events:none;box-shadow:var(--shadow-lg)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;border-radius:10px;padding:11px 20px;font-size:13px;font-weight:500;z-index:500;transform:translateY(16px);opacity:0;transition:all .28s;pointer-events:none;box-shadow:var(--shadow-lg)}
 .toast.show{transform:translateY(0);opacity:1}
-.empty-state{text-align:center;padding:50px 20px;color:var(--text-4);font-size:13px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-4);font-size:13px}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
+<!-- ═══════════ LOGIN SCREEN ═══════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 4h2v-2h2v2h2v2h-2v2h-2v-2h-2z"/></svg></div>
+    <div class="login-title">Assembly<span> Chennai</span></div>
+    <div class="login-sub">Sign in to access the dashboard</div>
+    <div class="login-form-row"><label class="login-label">Email or Username</label><input class="login-input" id="loginUser" placeholder="you@assemblychennai.com" autocomplete="username"></div>
+    <div class="login-form-row"><label class="login-label">Password</label><input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-footer">Access is restricted. Contact your admin for credentials.</div>
+  </div>
+</div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="appShell">
+
 <div class="topbar">
   <div class="topbar-left">
     <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 4h2v-2h2v2h2v2h-2v2h-2v-2h-2z"/></svg></div>
     <span class="brand-name">Assembly<span> Chennai</span></span>
-    <div class="topbar-divider"></div>
+    <div class="topbar-div"></div>
     <span class="topbar-sub">Allocation &amp; Capacity Dashboard</span>
   </div>
   <div class="topbar-right">
     <span class="topbar-date" id="currentDate"></span>
     <div class="live-badge"><div class="live-dot"></div>Live</div>
-    <button class="admin-btn" id="adminBtn" onclick="handleAdminClick()">
-      <span class="lock-icon">🔒</span><span id="adminBtnLabel">Admin</span>
-    </button>
+    <div class="user-pill" id="userPill" onclick="doLogout()"><div class="user-avatar" id="userAvatar">?</div><span id="userNameDisplay">User</span> &nbsp;·&nbsp; Sign out</div>
+    <button class="admin-btn" id="adminBtn" onclick="handleAdminClick()"><span class="lock-icon">🔒</span><span id="adminBtnLabel">Admin</span></button>
   </div>
 </div>
 
 <div class="admin-banner">
-  ✏️ &nbsp;<strong>Admin Mode ON</strong> — You can edit everything. Click 🔓 Lock when done.
-</div>
-
-<!-- TAB NAV -->
-<div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('overview')">⬜ Overview</button>
-  <button class="tab-btn" onclick="switchTab('roster')">👥 Full Roster</button>
-  <button class="tab-btn" onclick="switchTab('availability')">✅ Availability</button>
-  <button class="tab-btn" onclick="switchTab('forecast')">📈 Forecast &amp; Retainers</button>
-</div>
-
-<div class="main">
-
-  <!-- OVERVIEW -->
-  <div class="tab-panel active" id="tab-overview">
-    <div class="stats-row" id="statsRow"></div>
-    <div class="charts-row">
-      <div class="chart-card">
-        <div class="chart-label">Allocation Status</div>
-        <div class="donut-wrap">
-          <svg width="120" height="120" id="donutSvg" viewBox="0 0 120 120"></svg>
-          <div class="donut-legend" id="donutLegend"></div>
-        </div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-label">Headcount by Function</div>
-        <div class="fn-breakdown" id="fnBreakdown"></div>
-      </div>
-    </div>
-
-    <!-- MONTHLY REPORTS -->
-    <div class="notice-strip" id="monthlyReportsStrip">
-      <div class="notice-icon">📋</div>
-      <div class="notice-text">
-        <strong>Monthly Reports — Shared Minimal Contribution:</strong> The following reports carry shared effort across teams.
-        <div class="chips" id="reportChips"></div>
-      </div>
-      <button class="btn-icon edit-only" style="flex-shrink:0;align-self:flex-start;margin-top:2px" onclick="openReportModal()">✏️ Edit</button>
-    </div>
-
-    <!-- PENDING TASKS -->
-    <div class="section-header">
-      <div class="section-title">Pending Tasks</div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:12px;color:var(--text-3)">From completed or partially completed projects</span>
-        <button class="btn-primary edit-only" style="padding:6px 14px;font-size:12px" onclick="openPendingModal(null)">+ Add Task</button>
-      </div>
-    </div>
-    <div class="pending-grid" id="pendingGrid"></div>
-
-    <!-- AVAILABLE CAPACITY -->
-    <div class="section-header">
-      <div class="section-title">Currently Available Capacity</div>
-    </div>
-    <div class="avail-grid" id="availGrid"></div>
+  <span>✏️ &nbsp;<strong>Admin Mode ON</strong> — All sections editable.</span>
+  <div class="admin-banner-actions">
+    <button class="btn-icon" onclick="switchSuperTab('admin-portal')">🛡 Admin Portal</button>
+    <button class="btn-icon" onclick="openChangePwModal()">🔑 Change Password</button>
+    <button class="btn-icon" onclick="openHideTabsModal()">👁 Show/Hide Tabs</button>
   </div>
+</div>
 
-  <!-- ROSTER -->
-  <div class="tab-panel" id="tab-roster">
-    <div class="section-header">
-      <div class="section-title">Full Team Roster</div>
-      <button class="btn-primary edit-only" onclick="openAddModal()">+ Add Employee</button>
+<div class="super-nav" id="superNav"></div>
+<div id="mainContent" class="main"></div>
+
+</div><!-- end appShell -->
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- ADD USER MODAL -->
+<div class="modal-bg" id="addUserModal">
+  <div class="modal">
+    <div class="modal-title" id="addUserTitle">Add User</div>
+    <div class="modal-sub">Create login credentials for a new user</div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Full Name</label><input class="form-input" id="f_uName" placeholder="e.g. Priya Sharma"></div>
+      <div class="form-row"><label class="form-label">Email / Username</label><input class="form-input" id="f_uEmail" placeholder="priya@assemblychennai.com"></div>
     </div>
-    <div class="filter-bar">
-      <input class="filter-input" id="searchInput" placeholder="🔍  Search name, project, specialisation…" oninput="renderTable()">
-      <select class="filter-select" id="fnFilter" onchange="renderTable()"><option value="">All Functions</option></select>
-      <select class="filter-select" id="statusFilter" onchange="renderTable()">
-        <option value="">All Statuses</option>
-        <option value="Available">Available</option>
-        <option value="Partial">Partially Available</option>
-        <option value="Allocated">Allocated</option>
-        <option value="FTE">FTE Engagement</option>
-        <option value="Management">Management / Admin</option>
+    <div class="form-row"><label class="form-label">Password</label><input class="form-input" id="f_uPass" type="text" placeholder="Set a password for this user"></div>
+    <div class="form-row"><label class="form-label">Role</label>
+      <select class="form-select" id="f_uRole">
+        <option value="viewer">Viewer — read-only access</option>
+        <option value="admin">Admin — full access + editing</option>
       </select>
-      <select class="filter-select" id="specFilter" onchange="renderTable()"><option value="">All Specialisations</option></select>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th onclick="sortTable('employee')">Employee</th>
-          <th onclick="sortTable('function')">Function</th>
-          <th onclick="sortTable('specialisation')">Specialisation</th>
-          <th onclick="sortTable('allocationStatus')">Status</th>
-          <th onclick="sortTable('allocationPct')">Allocation %</th>
-          <th>Notes / Project</th>
-          <th></th>
-        </tr></thead>
-        <tbody id="rosterTbody"></tbody>
-      </table>
+    <div class="form-row"><label class="form-label">Visible Tabs</label><div id="f_uTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addUserModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveUser()">Save User</button>
     </div>
   </div>
-
-  <!-- AVAILABILITY -->
-  <div class="tab-panel" id="tab-availability">
-    <div class="section-header">
-      <div class="section-title">Availability View</div>
-      <select class="filter-select" id="availFnFilter" onchange="renderAvailability()"><option value="">All Functions</option></select>
-    </div>
-    <div class="avail-grid" id="availFullGrid"></div>
-  </div>
-
-  <!-- FORECAST -->
-  <div class="tab-panel" id="tab-forecast">
-
-    <!-- ALLOCATION NOTES -->
-    <div class="forecast-note" id="allocNotesBox"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:-14px;margin-bottom:22px">
-      <button class="btn-icon edit-only" onclick="openNotesModal()">✏️ Edit Allocation Notes</button>
-    </div>
-
-    <!-- RETAINERS -->
-    <div class="section-header" style="margin-bottom:16px">
-      <div class="section-title">Active Retainers / AMCs</div>
-      <button class="btn-primary edit-only" style="padding:6px 14px;font-size:12px" onclick="openRetainerModal(null)">+ Add Retainer</button>
-    </div>
-    <div class="retainer-grid" id="retainerGrid"></div>
-
-    <!-- FORECAST TABLE -->
-    <div class="section-header" style="margin-bottom:16px"><div class="section-title">Capacity Forecast by Function</div></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Function</th><th>Total HC</th><th>Fully Allocated</th>
-          <th>Partially Available</th><th>Available</th><th>Mgmt / Admin</th><th>Available FTE Equiv.</th>
-        </tr></thead>
-        <tbody id="forecastTbody"></tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
 
 <!-- EMPLOYEE MODAL -->
 <div class="modal-bg" id="editModal">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Edit Employee</div>
-    <div class="modal-sub" id="modalSub">Update allocation details</div>
+    <div class="modal-sub" id="modalSub"></div>
     <div class="form-row"><label class="form-label">Employee Name</label><input class="form-input" id="f_employee" placeholder="Full name"></div>
     <div class="form-grid">
       <div class="form-row"><label class="form-label">Function</label>
@@ -400,7 +378,7 @@ body.admin-mode .card-admin-actions{display:flex}
           <option>People Practices</option><option>Technology Services</option><option>Finance</option>
         </select>
       </div>
-      <div class="form-row"><label class="form-label">Specialisation</label><input class="form-input" id="f_specialisation" placeholder="e.g. Back End"></div>
+      <div class="form-row"><label class="form-label">Specialisation</label><input class="form-input" id="f_specialisation"></div>
     </div>
     <div class="form-grid">
       <div class="form-row"><label class="form-label">Allocation Status</label>
@@ -411,41 +389,38 @@ body.admin-mode .card-admin-actions{display:flex}
           <option>Corporate Management</option><option>Finance</option><option>DevOps</option>
         </select>
       </div>
-      <div class="form-row"><label class="form-label">Allocation % <span class="form-hint">(blank for mgmt)</span></label><input class="form-input" id="f_allocationPct" type="number" min="0" max="100" placeholder="0–100"></div>
+      <div class="form-row"><label class="form-label">Allocation % <span class="form-hint">(blank=mgmt)</span></label><input class="form-input" id="f_allocationPct" type="number" min="0" max="100"></div>
     </div>
-    <div class="form-row"><label class="form-label">Notes / Project Details</label><textarea class="form-textarea" id="f_notes" placeholder="e.g. FloatX Support, ADC Poland…"></textarea></div>
+    <div class="form-row"><label class="form-label">Notes</label><textarea class="form-textarea" id="f_notes"></textarea></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('editModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveEmployee()">Save Changes</button>
+      <button class="btn-primary" onclick="saveEmployee()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- PENDING TASK MODAL -->
+<!-- PENDING MODAL -->
 <div class="modal-bg" id="pendingModal">
-  <div class="modal" style="width:420px">
+  <div class="modal" style="width:400px">
     <div class="modal-title" id="pendingModalTitle">Add Pending Task</div>
-    <div class="modal-sub">Enter the task details below</div>
-    <div class="form-row"><label class="form-label">Task Name</label><input class="form-input" id="f_pendingName" placeholder="e.g. AMP Deployment Support"></div>
+    <div class="modal-sub">Task details</div>
+    <div class="form-row"><label class="form-label">Task Name</label><input class="form-input" id="f_pendingName"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('pendingModal')">Cancel</button>
-      <button class="btn-primary" onclick="savePendingTask()">Save Task</button>
+      <button class="btn-primary" onclick="savePendingTask()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- MONTHLY REPORTS MODAL -->
+<!-- REPORT MODAL -->
 <div class="modal-bg" id="reportModal">
-  <div class="modal" style="width:420px">
+  <div class="modal" style="width:400px">
     <div class="modal-title">Edit Monthly Reports</div>
     <div class="modal-sub">Add or remove report chips</div>
-    <div class="form-row"><label class="form-label">Add New Report</label>
-      <div style="display:flex;gap:8px">
-        <input class="form-input" id="f_reportName" placeholder="e.g. Norwell Pharma Science" style="flex:1">
-        <button class="btn-primary" style="padding:9px 14px;white-space:nowrap" onclick="addReport()">Add</button>
-      </div>
+    <div class="form-row"><label class="form-label">Add Report</label>
+      <div style="display:flex;gap:8px"><input class="form-input" id="f_reportName" style="flex:1" placeholder="Report name"><button class="btn-primary btn-sm" onclick="addReport()">Add</button></div>
     </div>
-    <div class="form-row"><label class="form-label">Current Reports</label><div id="reportEditList" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px"></div></div>
+    <div class="form-row"><label class="form-label">Current Reports</label><div id="reportEditList" style="display:flex;flex-wrap:wrap;gap:7px;min-height:28px"></div></div>
     <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('reportModal')">Done</button></div>
   </div>
 </div>
@@ -454,54 +429,111 @@ body.admin-mode .card-admin-actions{display:flex}
 <div class="modal-bg" id="retainerModal">
   <div class="modal" style="width:420px">
     <div class="modal-title" id="retainerModalTitle">Add Retainer</div>
-    <div class="modal-sub">Fill in retainer details</div>
-    <div class="form-row"><label class="form-label">Retainer Name</label><input class="form-input" id="f_retName" placeholder="e.g. FloatX Retainer"></div>
-    <div class="form-row"><label class="form-label">Description / Team</label><input class="form-input" id="f_retMeta" placeholder="e.g. Shared across teams"></div>
+    <div class="modal-sub"></div>
+    <div class="form-row"><label class="form-label">Name</label><input class="form-input" id="f_retName"></div>
+    <div class="form-row"><label class="form-label">Meta / Description</label><input class="form-input" id="f_retMeta"></div>
     <div class="form-grid">
-      <div class="form-row"><label class="form-label">Label</label>
-        <select class="form-select" id="f_retLabel"><option>Max Allocation</option><option>Allocation</option></select>
-      </div>
-      <div class="form-row"><label class="form-label">Allocation %</label><input class="form-input" id="f_retPct" type="number" min="0" max="100" placeholder="e.g. 47"></div>
+      <div class="form-row"><label class="form-label">Label</label><select class="form-select" id="f_retLabel"><option>Max Allocation</option><option>Allocation</option></select></div>
+      <div class="form-row"><label class="form-label">Allocation %</label><input class="form-input" id="f_retPct" type="number" min="0" max="100"></div>
     </div>
-    <div class="form-row"><label class="form-label">Value Colour</label>
+    <div class="form-row"><label class="form-label">Colour</label>
       <select class="form-select" id="f_retColor">
-        <option value="var(--available)">Green (Available)</option>
-        <option value="var(--accent)">Blue (Allocated)</option>
-        <option value="var(--fte)">Purple (FTE)</option>
-        <option value="var(--partial)">Amber (Partial)</option>
+        <option value="var(--available)">Green</option><option value="var(--accent)">Blue</option>
+        <option value="var(--fte)">Purple</option><option value="var(--partial)">Amber</option>
       </select>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('retainerModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveRetainer()">Save Retainer</button>
+      <button class="btn-primary" onclick="saveRetainer()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- ALLOCATION NOTES MODAL -->
+<!-- NOTES MODAL -->
 <div class="modal-bg" id="notesModal">
-  <div class="modal" style="width:520px">
+  <div class="modal" style="width:500px">
     <div class="modal-title">Edit Allocation Notes</div>
-    <div class="modal-sub">Each line will appear as a bullet point</div>
-    <div class="form-row"><label class="form-label">Add New Note</label>
-      <div style="display:flex;gap:8px">
-        <input class="form-input" id="f_newNote" placeholder="Type a note and click Add" style="flex:1">
-        <button class="btn-primary" style="padding:9px 14px;white-space:nowrap" onclick="addNote()">Add</button>
-      </div>
+    <div class="modal-sub">Each entry = one bullet point</div>
+    <div class="form-row"><label class="form-label">Add Note</label>
+      <div style="display:flex;gap:8px"><input class="form-input" id="f_newNote" style="flex:1" placeholder="Type and click Add"><button class="btn-primary btn-sm" onclick="addNote()">Add</button></div>
     </div>
-    <div class="form-row"><label class="form-label">Current Notes</label>
-      <div id="notesEditList" style="display:flex;flex-direction:column;gap:8px;min-height:40px"></div>
-    </div>
+    <div class="form-row"><label class="form-label">Current Notes</label><div id="notesEditList" style="display:flex;flex-direction:column;gap:7px"></div></div>
     <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('notesModal')">Done</button></div>
   </div>
 </div>
 
-<!-- PASSWORD MODAL -->
+<!-- STAFFING MODAL -->
+<div class="modal-bg" id="staffingModal">
+  <div class="modal" style="width:520px">
+    <div class="modal-title" id="staffingModalTitle">Add Staffing Row</div>
+    <div class="modal-sub"></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Region</label>
+        <select class="form-select" id="f_sRegion"><option>ANZ</option><option>APAC</option><option>EUR</option><option>INDIA</option><option>NAM</option><option>Internal</option></select>
+      </div>
+      <div class="form-row"><label class="form-label">Client</label><input class="form-input" id="f_sClient"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="f_sDesc"></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Type</label><select class="form-select" id="f_sType"><option>Revenue</option><option>Staff Cost</option></select></div>
+      <div class="form-row"><label class="form-label">Amount (₹) — Revenue only</label><input class="form-input" id="f_sAmount" placeholder="e.g. 25,84,087"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Resource</label><input class="form-input" id="f_sResource"></div>
+      <div class="form-row"><label class="form-label">Allocation %</label><input class="form-input" id="f_sAlloc" placeholder="e.g. 100%"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('staffingModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveStaffingRow()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TITLE MODAL -->
+<div class="modal-bg" id="titleModal">
+  <div class="modal" style="width:360px">
+    <div class="modal-title">Edit Heading</div>
+    <div class="modal-sub">Update the heading text</div>
+    <div class="form-row"><label class="form-label">Heading Text</label><input class="form-input" id="f_titleText"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('titleModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveTitleEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PW MODAL -->
+<div class="modal-bg" id="changePwModal">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">Change Admin Password</div>
+    <div class="modal-sub"></div>
+    <div class="form-row"><label class="form-label">Current Password</label><input class="form-input" id="f_curPw" type="password"></div>
+    <div class="form-row"><label class="form-label">New Password</label><input class="form-input" id="f_newPw" type="password"></div>
+    <div class="form-row"><label class="form-label">Confirm New Password</label><input class="form-input" id="f_confPw" type="password"></div>
+    <div class="pw-error" id="changePwError" style="text-align:left;margin-bottom:0;font-size:12px"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('changePwModal')">Cancel</button>
+      <button class="btn-primary" onclick="changePassword()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- HIDE TABS MODAL -->
+<div class="modal-bg" id="hideTabsModal">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">Show / Hide Tabs</div>
+    <div class="modal-sub">Hidden tabs are invisible to all users except admin</div>
+    <div id="hideTabsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('hideTabsModal')">Done</button></div>
+  </div>
+</div>
+
+<!-- ADMIN PW MODAL -->
 <div class="pw-modal-bg" id="pwModal">
   <div class="pw-modal">
     <div class="pw-icon">🔐</div>
     <div class="pw-title">Admin Access</div>
-    <div class="pw-sub">Enter your password to enable editing</div>
+    <div class="pw-sub">Enter admin password to unlock editing</div>
     <input class="pw-input" id="pwInput" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitPassword()">
     <div class="pw-error" id="pwError"></div>
     <div class="pw-actions">
@@ -514,7 +546,68 @@ body.admin-mode .card-admin-actions{display:flex}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// CORE CONFIG
+// ═══════════════════════════════════════════════════════════════
+let ADMIN_PASSWORD = "teampulse2025";
+let isAdmin = false;
+let currentUser = null;
+let sessionStart = null;
+
+// Registered users — admin can add/remove
+let users = [
+  {id:1, name:"Admin", email:"admin", password:"teampulse2025", role:"admin", status:"active", visibleTabs:["overview","roster","availability","forecast","staffing-rev","staffing-detail-rev","staffing","staffing-detail","admin-portal"]},
+  {id:2, name:"Demo Viewer", email:"viewer", password:"viewer123", role:"viewer", status:"active", visibleTabs:["overview","roster","availability","forecast"]},
+];
+let nextUserId = 3;
+
+// Login history
+let loginHistory = [];
+
+// Tab definitions
+let tabDefs = [
+  {id:"overview",            label:"Overview",                        emoji:"⬜", hidden:false},
+  {id:"roster",              label:"Full Roster",                     emoji:"👥", hidden:false},
+  {id:"availability",        label:"Availability",                    emoji:"✅", hidden:false},
+  {id:"forecast",            label:"Forecast & Retainers",            emoji:"📈", hidden:false},
+  {id:"staffing-rev",        label:"Staffing Overview (with Revenue)", emoji:"💰", hidden:false},
+  {id:"staffing-detail-rev", label:"Staffing Details (with Revenue)",  emoji:"📊", hidden:false},
+  {id:"staffing",            label:"Staffing Overview",               emoji:"💼", hidden:false},
+  {id:"staffing-detail",     label:"Staffing Details",                emoji:"📋", hidden:false},
+  {id:"admin-portal",        label:"Admin Portal",                    emoji:"🛡", hidden:false},
+];
+
+// Headings
+let headings = {
+  "pending-title":"Pending Tasks","pending-sub":"From completed or partially completed projects",
+  "monthly-title":"Monthly Reports — Shared Minimal Contribution",
+  "avail-title":"Currently Available Capacity","roster-title":"Full Team Roster",
+  "avail-tab-title":"Availability View","forecast-title":"Active Retainers / AMCs",
+  "forecast-note-title":"Allocation Notes","capacity-title":"Capacity Forecast by Function",
+  "staffing-rev-title":"Staffing Overview (with Revenue)","region-summary-title":"Revenue by Region",
+  "staffing-detail-rev-title":"Staffing Details (with Revenue)",
+  "staffing-title":"Staffing Overview","staffing-detail-title":"Staffing Details",
+};
+
+let currentTab = "overview";
+let editingTitleKey = null;
+let editingEmpId = null, editingRetId = null, editingPendingIdx = null, editingStaffId = null, editingUserId = null;
+let sortKey = null, sortAsc = true;
+let nextEmpId = 56, nextRetId = 7, nextStaffId = 117;
+
+// ═══════════ DATA ═══════════
+let pendingTasks = ["AMP Deployment Support","Audience HUB Test Evidence Submission","Political Campaign Deployment Support"];
+let monthlyReports = ["FloatX Server Maintenance","Grubb","Okada","Norwell Pharma Science"];
+let allocNotes = ["Account Management, Project Management, People Practices, Corporate Management, and Finance have no fixed allocation % — they serve as client-facing, support, or practice lead roles.","DevOps team members span multiple Retainers/AMCs depending on work requests.","Creative team is marked fully engaged on named accounts.","Monthly reports carry shared contribution across teams."];
+let retainers = [
+  {id:1,name:"ACR IIT Madras — Shaastra",meta:"Mag Population · Content Service Team",label:"Max Allocation",pct:20,color:"var(--available)"},
+  {id:2,name:"FloatX Retainer",meta:"Shared across teams",label:"Max Allocation",pct:47,color:"var(--accent)"},
+  {id:3,name:"AMP Engagement",meta:"Technology Services · FTE",label:"Allocation",pct:100,color:"var(--fte)"},
+  {id:4,name:"ADC Poland",meta:"Creative Services · FTE Engagement",label:"Allocation",pct:100,color:"var(--fte)"},
+  {id:5,name:"ADC North America",meta:"Creative Services · FTE Engagement",label:"Allocation",pct:100,color:"var(--fte)"},
+  {id:6,name:"Assembly SG — Banyan",meta:"Creative Services · Partial",label:"Allocation",pct:50,color:"var(--partial)"},
+];
+
 let employees=[
   {id:1,function:"Account Management",employee:"Shweta Krishna",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
   {id:2,function:"Account Management",employee:"Gunjan Bansal",specialisation:"Account Management",allocationStatus:"Client Servicing",allocationPct:null,notes:""},
@@ -573,252 +666,609 @@ let employees=[
   {id:55,function:"Finance",employee:"Duraipandi Paraman",specialisation:"Finance",allocationStatus:"Finance",allocationPct:null,notes:""},
 ];
 
-let pendingTasks=["AMP Deployment Support","Audience HUB Test Evidence Submission","Political Campaign Deployment Support"];
-let monthlyReports=["FloatX Server Maintenance","Grubb","Okada","Norwell Pharma Science"];
-let allocNotes=["Account Management, Project Management, People Practices, Corporate Management, and Finance have no fixed allocation % — they serve as client-facing, support, or practice lead roles.","DevOps team members span multiple Retainers/AMCs depending on work requests.","Creative team is marked fully engaged on named accounts.","Monthly reports carry shared contribution across teams."];
-let retainers=[
-  {id:1,name:"ACR IIT Madras — Shaastra",meta:"Mag Population · Content Service Team",label:"Max Allocation",pct:20,color:"var(--available)"},
-  {id:2,name:"FloatX Retainer",meta:"Shared across teams",label:"Max Allocation",pct:47,color:"var(--accent)"},
-  {id:3,name:"AMP Engagement",meta:"Technology Services · FTE",label:"Allocation",pct:100,color:"var(--fte)"},
-  {id:4,name:"ADC Poland",meta:"Creative Services · FTE Engagement",label:"Allocation",pct:100,color:"var(--fte)"},
-  {id:5,name:"ADC North America",meta:"Creative Services · FTE Engagement",label:"Allocation",pct:100,color:"var(--fte)"},
-  {id:6,name:"Assembly SG — Banyan",meta:"Creative Services · Partial",label:"Allocation",pct:50,color:"var(--partial)"},
+let staffingRows=[
+  {id:1,region:"ANZ",client:"AMP Australia",description:"Augmented Angular Developers Team x 3",type:"Revenue",resource:"",allocation:"",amount:"1,75,93,030"},
+  {id:2,region:"ANZ",client:"AMP Australia",description:"Augmented Angular Developers Team x 3",type:"Staff Cost",resource:"Murugan H",allocation:"100%",amount:""},
+  {id:3,region:"ANZ",client:"AMP Australia",description:"Augmented Angular Developers Team x 3",type:"Staff Cost",resource:"Sathishkumar Sekar",allocation:"100%",amount:""},
+  {id:4,region:"ANZ",client:"AMP Australia",description:"Augmented Angular Developers Team x 3",type:"Staff Cost",resource:"Amit Kumar Baskey",allocation:"100%",amount:""},
+  {id:5,region:"ANZ",client:"AMP Australia",description:"NMA - Application",type:"Revenue",resource:"",allocation:"",amount:"25,84,087"},
+  {id:6,region:"ANZ",client:"AMP Australia",description:"NMA - Application",type:"Staff Cost",resource:"Srinivasan Ponniah",allocation:"5%",amount:""},
+  {id:7,region:"ANZ",client:"AMP Australia",description:"NMA - Application",type:"Staff Cost",resource:"T Vinoth Kumar",allocation:"50%",amount:""},
+  {id:8,region:"ANZ",client:"FloatX",description:"Project updates & CRs",type:"Revenue",resource:"",allocation:"",amount:"18,10,759"},
+  {id:9,region:"ANZ",client:"FloatX",description:"Project updates & CRs",type:"Staff Cost",resource:"Reshma Devi M",allocation:"10%",amount:""},
+  {id:10,region:"ANZ",client:"FloatX",description:"Project updates & CRs",type:"Staff Cost",resource:"T Raghunath",allocation:"20%",amount:""},
+  {id:11,region:"ANZ",client:"FloatX",description:"Project updates & CRs",type:"Staff Cost",resource:"Dinesh Pandi M",allocation:"25%",amount:""},
+  {id:12,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Revenue",resource:"",allocation:"",amount:"28,45,342"},
+  {id:13,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Staff Cost",resource:"Reshma Devi M",allocation:"3%",amount:""},
+  {id:14,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Staff Cost",resource:"Dilip Kumar Chellaboina",allocation:"18%",amount:""},
+  {id:15,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"18%",amount:""},
+  {id:16,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Staff Cost",resource:"T Raghunath",allocation:"5%",amount:""},
+  {id:17,region:"ANZ",client:"FloatX",description:"Server monthly maintenance",type:"Staff Cost",resource:"Srinivasan Ponniah",allocation:"5%",amount:""},
+  {id:18,region:"ANZ",client:"FloatX",description:"Web application monthly maintenance",type:"Revenue",resource:"",allocation:"",amount:"25,12,942"},
+  {id:19,region:"ANZ",client:"FloatX",description:"Web application monthly maintenance",type:"Staff Cost",resource:"Reshma Devi M",allocation:"5%",amount:""},
+  {id:20,region:"ANZ",client:"FloatX",description:"Web application monthly maintenance",type:"Staff Cost",resource:"T Raghunath",allocation:"10%",amount:""},
+  {id:21,region:"ANZ",client:"FloatX",description:"Web application monthly maintenance",type:"Staff Cost",resource:"Dinesh Pandi M",allocation:"50%",amount:""},
+  {id:22,region:"ANZ",client:"Robert Half",description:"Asset Production - Multiple Projects",type:"Revenue",resource:"",allocation:"",amount:"10,00,000"},
+  {id:23,region:"ANZ",client:"Robert Half",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"Shweta Krishna",allocation:"10%",amount:""},
+  {id:24,region:"ANZ",client:"Robert Half",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"S Senthil",allocation:"10%",amount:""},
+  {id:25,region:"ANZ",client:"Robert Half",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"Sibiraj Bastin",allocation:"2%",amount:""},
+  {id:26,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Revenue",resource:"",allocation:"",amount:"1,03,39,528"},
+  {id:27,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"N Mathangi",allocation:"10%",amount:""},
+  {id:28,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"Karthi Kumar M",allocation:"40%",amount:""},
+  {id:29,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"Karthika Balakrishnan",allocation:"100%",amount:""},
+  {id:30,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"Premananth R",allocation:"10%",amount:""},
+  {id:31,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"Malathi P",allocation:"100%",amount:""},
+  {id:32,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"S Vidhyavathi",allocation:"20%",amount:""},
+  {id:33,region:"APAC",client:"Citibank Singapore Limited",description:"CWP Retainer 2026",type:"Staff Cost",resource:"Paul Aristotil K",allocation:"100%",amount:""},
+  {id:34,region:"APAC",client:"Tiger Resorts Leisure & Entertainment",description:"Patron Registration AMC",type:"Revenue",resource:"",allocation:"",amount:"9,67,779"},
+  {id:35,region:"APAC",client:"Tiger Resorts Leisure & Entertainment",description:"Patron Registration AMC",type:"Staff Cost",resource:"N Mathangi",allocation:"1%",amount:""},
+  {id:36,region:"APAC",client:"Tiger Resorts Leisure & Entertainment",description:"Patron Registration AMC",type:"Staff Cost",resource:"Karthi Kumar M",allocation:"13%",amount:""},
+  {id:37,region:"APAC",client:"Tiger Resorts Leisure & Entertainment",description:"Patron Registration AMC",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"8%",amount:""},
+  {id:38,region:"APAC",client:"Tiger Resorts Leisure & Entertainment",description:"Patron Registration AMC",type:"Staff Cost",resource:"Dinesh Pandi M",allocation:"5%",amount:""},
+  {id:39,region:"APAC",client:"Union Bank of the Philippines",description:"Asset Production - Multiple Projects",type:"Revenue",resource:"",allocation:"",amount:"7,03,808"},
+  {id:40,region:"APAC",client:"Union Bank of the Philippines",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"Manasi Popat",allocation:"1.15%",amount:""},
+  {id:41,region:"APAC",client:"Union Bank of the Philippines",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"S Senthil",allocation:"1.67%",amount:""},
+  {id:42,region:"APAC",client:"Union Bank of the Philippines",description:"Asset Production - Multiple Projects",type:"Staff Cost",resource:"Ragupathy T",allocation:"1.41%",amount:""},
+  {id:43,region:"EUR",client:"JLL UK",description:"Booking tool enhancements",type:"Revenue",resource:"",allocation:"",amount:"21,14,814"},
+  {id:44,region:"EUR",client:"JLL UK",description:"Booking tool enhancements",type:"Staff Cost",resource:"Sabita Chowdhry",allocation:"1.41%",amount:""},
+  {id:45,region:"EUR",client:"JLL UK",description:"Booking tool enhancements",type:"Staff Cost",resource:"Vignesh Panneer Selvam",allocation:"6%",amount:""},
+  {id:46,region:"INDIA",client:"AMTDC",description:"Website maintenance",type:"Revenue",resource:"",allocation:"",amount:"13,82,700"},
+  {id:47,region:"INDIA",client:"AMTDC",description:"Website maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"5%",amount:""},
+  {id:48,region:"INDIA",client:"AMTDC",description:"Website maintenance",type:"Staff Cost",resource:"Dilip Kumar Chellaboina",allocation:"5%",amount:""},
+  {id:49,region:"INDIA",client:"Bits Law",description:"BITS LAW Annual Maintenance Contract",type:"Revenue",resource:"",allocation:"",amount:"8,40,000"},
+  {id:50,region:"INDIA",client:"Bits Law",description:"BITS LAW Annual Maintenance Contract",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"5%",amount:""},
+  {id:51,region:"INDIA",client:"Gitam",description:"Server maintenance",type:"Revenue",resource:"",allocation:"",amount:"3,92,004"},
+  {id:52,region:"INDIA",client:"Gitam",description:"Server maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"5%",amount:""},
+  {id:53,region:"INDIA",client:"IAMAI",description:"Earth Sumit website",type:"Revenue",resource:"",allocation:"",amount:"50,000"},
+  {id:54,region:"INDIA",client:"IAMAI",description:"Earth Sumit website",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"1%",amount:""},
+  {id:55,region:"INDIA",client:"IAMAI",description:"Server maintenance",type:"Revenue",resource:"",allocation:"",amount:"3,60,000"},
+  {id:56,region:"INDIA",client:"IAMAI",description:"Server maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"2%",amount:""},
+  {id:57,region:"INDIA",client:"IIT Madras",description:"Heritage center site maintenance",type:"Revenue",resource:"",allocation:"",amount:"2,62,703"},
+  {id:58,region:"INDIA",client:"IIT Madras",description:"Heritage center site maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"3%",amount:""},
+  {id:59,region:"INDIA",client:"IIT Madras",description:"Shastra web & Magazine",type:"Revenue",resource:"",allocation:"",amount:"7,56,000"},
+  {id:60,region:"INDIA",client:"IIT Madras",description:"Shastra web & Magazine",type:"Staff Cost",resource:"S Vidhyavathi",allocation:"2%",amount:""},
+  {id:61,region:"INDIA",client:"IIT Madras",description:"Shastra web & Magazine",type:"Staff Cost",resource:"Mungurla Tanuja",allocation:"11%",amount:""},
+  {id:62,region:"INDIA",client:"IIT Madras",description:"Shastra web & Magazine",type:"Staff Cost",resource:"Tarigopula Naveen Kumar",allocation:"11%",amount:""},
+  {id:63,region:"INDIA",client:"IIT Madras",description:"Website maintenance",type:"Revenue",resource:"",allocation:"",amount:"6,44,000"},
+  {id:64,region:"INDIA",client:"IIT Madras",description:"Website maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"2%",amount:""},
+  {id:65,region:"INDIA",client:"Infiniti Retail Ltd",description:"Crom Unboxed Website Maintenance",type:"Revenue",resource:"",allocation:"",amount:"33,72,000"},
+  {id:66,region:"INDIA",client:"Infiniti Retail Ltd",description:"Crom Unboxed Website Maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"3%",amount:""},
+  {id:67,region:"INDIA",client:"Infiniti Retail Ltd",description:"Crom Unboxed Website Maintenance",type:"Staff Cost",resource:"Dilip Kumar Chellaboina",allocation:"3%",amount:""},
+  {id:68,region:"INDIA",client:"Sakhi4life",description:"Annual Maintenance",type:"Revenue",resource:"",allocation:"",amount:"72,000"},
+  {id:69,region:"INDIA",client:"Sakhi4life",description:"Annual Maintenance",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"1%",amount:""},
+  {id:70,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Revenue",resource:"",allocation:"",amount:"17,55,571"},
+  {id:71,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Staff Cost",resource:"Manasi Popat",allocation:"5%",amount:""},
+  {id:72,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Staff Cost",resource:"Sabita Chowdhry",allocation:"5%",amount:""},
+  {id:73,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Staff Cost",resource:"Karthi Kumar M",allocation:"7%",amount:""},
+  {id:74,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"15%",amount:""},
+  {id:75,region:"NAM",client:"Grubb Properties",description:"AMC 2026",type:"Staff Cost",resource:"Dinesh Pandi M",allocation:"5%",amount:""},
+  {id:76,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Revenue",resource:"",allocation:"",amount:"53,50,155"},
+  {id:77,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Manasi Popat",allocation:"5%",amount:""},
+  {id:78,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Sabita Chowdhry",allocation:"5%",amount:""},
+  {id:79,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Athithan R",allocation:"40%",amount:""},
+  {id:80,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Nandu Krishna",allocation:"5%",amount:""},
+  {id:81,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Deivendran P",allocation:"5%",amount:""},
+  {id:82,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Karthi Kumar M",allocation:"30%",amount:""},
+  {id:83,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"N Mathangi",allocation:"5%",amount:""},
+  {id:84,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Dilip Kumar Chellaboina",allocation:"5%",amount:""},
+  {id:85,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Keerthana Ponnaiyan",allocation:"5%",amount:""},
+  {id:86,region:"NAM",client:"Norwell (Pharmascience)",description:"AMC 2026",type:"Staff Cost",resource:"Dinesh Pandi M",allocation:"5%",amount:""},
+  {id:87,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Revenue",resource:"",allocation:"",amount:"35,00,000"},
+  {id:88,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Manasi Popat",allocation:"50%",amount:""},
+  {id:89,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Sabita Chowdhry",allocation:"25%",amount:""},
+  {id:90,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"S Senthil",allocation:"50%",amount:""},
+  {id:91,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Athithan R",allocation:"25%",amount:""},
+  {id:92,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Deivendran P",allocation:"25%",amount:""},
+  {id:93,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Gowshick Thiruvarasu",allocation:"25%",amount:""},
+  {id:94,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Karthi Kumar M",allocation:"25%",amount:""},
+  {id:95,region:"NAM",client:"Norwell (Pharmascience)",description:"Creative and Asset Production",type:"Staff Cost",resource:"Prithiga G",allocation:"25%",amount:""},
+  {id:96,region:"EUR",client:"Assembly Digital Commerce",description:"Design FTEs",type:"Revenue",resource:"",allocation:"",amount:"50,97,600"},
+  {id:97,region:"EUR",client:"Assembly Digital Commerce",description:"Design FTEs",type:"Staff Cost",resource:"Mukesh R",allocation:"100%",amount:""},
+  {id:98,region:"EUR",client:"Assembly Digital Commerce",description:"Design FTEs",type:"Staff Cost",resource:"Susheel I",allocation:"100%",amount:""},
+  {id:99,region:"EUR",client:"Assembly Digital Commerce",description:"Design FTEs",type:"Staff Cost",resource:"Goushe Basha A",allocation:"100%",amount:""},
+  {id:100,region:"EUR",client:"Assembly Digital Commerce",description:"Design FTEs",type:"Staff Cost",resource:"K Mohammed Asfaan",allocation:"100%",amount:""},
+  {id:101,region:"EUR",client:"Assembly Digital Commerce",description:"PM",type:"Revenue",resource:"",allocation:"",amount:"-"},
+  {id:102,region:"EUR",client:"Assembly Digital Commerce",description:"PM",type:"Staff Cost",resource:"N Mathangi",allocation:"8%",amount:""},
+  {id:103,region:"NAM",client:"Crispin",description:"Creative Pod",type:"Revenue",resource:"",allocation:"",amount:"64,80,000"},
+  {id:104,region:"NAM",client:"Crispin",description:"Creative Pod",type:"Staff Cost",resource:"Sibiraj Bastin",allocation:"50%",amount:""},
+  {id:105,region:"NAM",client:"Crispin",description:"Creative Pod",type:"Staff Cost",resource:"Shweta Krishna",allocation:"50%",amount:""},
+  {id:106,region:"NAM",client:"Crispin",description:"Creative Pod",type:"Staff Cost",resource:"Ragupathy T",allocation:"100%",amount:""},
+  {id:107,region:"NAM",client:"Crispin",description:"Creative Pod",type:"Staff Cost",resource:"Aathimoorthy N",allocation:"100%",amount:""},
+  {id:108,region:"NAM",client:"M+S",description:"Creative Services",type:"Revenue",resource:"",allocation:"",amount:"5,26,500"},
+  {id:109,region:"NAM",client:"M+S",description:"Creative Services",type:"Staff Cost",resource:"Sibiraj Bastin",allocation:"5%",amount:""},
+  {id:110,region:"NAM",client:"M+S",description:"Creative Services",type:"Staff Cost",resource:"S Senthil",allocation:"10%",amount:""},
+  {id:111,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Revenue",resource:"",allocation:"",amount:"-"},
+  {id:112,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Staff Cost",resource:"Srinivasan Ponniah",allocation:"10%",amount:""},
+  {id:113,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Staff Cost",resource:"Vignesh Panneer Selvam",allocation:"50%",amount:""},
+  {id:114,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Staff Cost",resource:"Prateep Kumar S",allocation:"50%",amount:""},
+  {id:115,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Staff Cost",resource:"Sabita Chowdhry",allocation:"10%",amount:""},
+  {id:116,region:"Internal",client:"Assembly GD",description:"AI Projects",type:"Staff Cost",resource:"Sibiraj Bastin",allocation:"10%",amount:""},
 ];
 
-let nextId=56,nextRetId=7,editingId=null,editingRetId=null,editingPendingIdx=null;
-let sortKey=null,sortAsc=true,isAdmin=false;
-const ADMIN_PASSWORD="teampulse2025";
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function getCat(e){const s=e.allocationStatus;if(["Client Servicing","Project Management","Practice Lead","System Admin","People Practices","Corporate Management","Finance","DevOps"].includes(s))return"Management";if(s==="Available")return"Available";if(s==="Partially Available")return"Partial";return"Allocated";}
-function catCol(c){return{Available:"var(--available)",Partial:"var(--partial)",Allocated:"var(--alloc)",Management:"var(--mgmt)"}[c]||"var(--mgmt)";}
-function fnCls(fn){return{"Account Management":"fn-account","Content Services":"fn-content","Creative Services":"fn-creative","Marketing Services":"fn-marketing","Technology Services":"fn-technology","Operations":"fn-operations","People Practices":"fn-people","Corporate Management":"fn-corporate","Finance":"fn-finance"}[fn]||"";}
-function allocCell(pct,cat){if(pct===null||pct===undefined)return`<span style="color:var(--text-4);font-size:12px">—</span>`;const c=catCol(cat);return`<div class="alloc-cell"><div class="alloc-bg"><div class="alloc-fill" style="width:${pct}%;background:${c}"></div></div><span class="alloc-pct" style="color:${c}">${pct}%</span></div>`;}
-function statusBadge(e){const cat=getCat(e),dc={Available:"d-av",Partial:"d-pt",Allocated:"d-al",Management:"d-mg"}[cat];const lbl=cat==="Allocated"?e.allocationStatus:cat;return`<div class="sdot"><div class="dot ${dc}"></div>${lbl}</div>`;}
-
-// ── STATS ─────────────────────────────────────────────────────────────────────
-function renderStats(){
-  const t=employees.length,av=employees.filter(e=>getCat(e)==="Available").length,pt=employees.filter(e=>getCat(e)==="Partial").length,al=employees.filter(e=>getCat(e)==="Allocated").length,mg=employees.filter(e=>getCat(e)==="Management").length;
-  document.getElementById("statsRow").innerHTML=[
-    {lbl:"Total Headcount",val:t,sub:"across all functions",col:"var(--accent)",acc:"#1a56db"},
-    {lbl:"Available",val:av,sub:"ready for assignment",col:"var(--available)",acc:"#0a7c5c"},
-    {lbl:"Partially Available",val:pt,sub:"have remaining capacity",col:"var(--partial)",acc:"#b45309"},
-    {lbl:"Fully Allocated",val:al,sub:"on active engagements",col:"var(--alloc)",acc:"#1a56db"},
-    {lbl:"Mgmt / Support",val:mg,sub:"no fixed allocation %",col:"var(--mgmt)",acc:"#4b5563"},
-  ].map(c=>`<div class="stat-card"><div class="stat-accent" style="background:${c.acc}"></div><div class="stat-label">${c.lbl}</div><div class="stat-value" style="color:${c.col}">${c.val}</div><div class="stat-sub">${c.sub}</div></div>`).join("");
+// ═══════════════════════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ═══════════════════════════════════════════════════════════════
+function doLogin(){
+  const u=document.getElementById("loginUser").value.trim().toLowerCase();
+  const p=document.getElementById("loginPass").value;
+  const user=users.find(x=>(x.email.toLowerCase()===u||x.name.toLowerCase()===u)&&x.password===p&&x.status==="active");
+  if(!user){document.getElementById("loginError").textContent="Invalid credentials or account not active.";return;}
+  currentUser=user;
+  sessionStart=Date.now();
+  loginHistory.unshift({userId:user.id,name:user.name,email:user.email,loginAt:new Date(),logoutAt:null,duration:null});
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("appShell").style.display="block";
+  document.getElementById("userNameDisplay").textContent=user.name;
+  document.getElementById("userAvatar").textContent=user.name.charAt(0).toUpperCase();
+  document.getElementById("currentDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"short",year:"numeric",month:"long",day:"numeric"});
+  // If admin user, show admin button
+  if(user.role==="admin"){document.getElementById("adminBtn").style.display="flex";}
+  else{document.getElementById("adminBtn").style.display="none";}
+  // Set starting tab
+  const visTab=tabDefs.find(t=>user.visibleTabs.includes(t.id)&&!t.hidden);
+  currentTab=visTab?visTab.id:"overview";
+  renderSuperNav();renderMainContent();
+  showToast("Welcome, "+user.name+"!");
 }
 
-// ── DONUT ─────────────────────────────────────────────────────────────────────
-function renderDonut(){
-  const cats=["Available","Partial","Allocated","Management"],cols=["#0a7c5c","#b45309","#1a56db","#6b7280"],counts=cats.map(c=>employees.filter(e=>getCat(e)===c).length),total=counts.reduce((a,b)=>a+b,0);
-  let a=-Math.PI/2,paths="";const cx=60,cy=60,r=48,ir=30;
-  counts.forEach((n,i)=>{if(!n)return;const sw=(n/total)*2*Math.PI,x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(a+sw),y2=cy+r*Math.sin(a+sw),xi1=cx+ir*Math.cos(a),yi1=cy+ir*Math.sin(a),xi2=cx+ir*Math.cos(a+sw),yi2=cy+ir*Math.sin(a+sw),lg=sw>Math.PI?1:0;paths+=`<path d="M${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${ir},${ir} 0 ${lg},0 ${xi1},${yi1} Z" fill="${cols[i]}"/>`;a+=sw;});
-  document.getElementById("donutSvg").innerHTML=paths+`<text x="60" y="56" text-anchor="middle" font-family="Playfair Display,serif" font-size="18" font-weight="700" fill="#111827">${total}</text><text x="60" y="70" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9" fill="#9ca3af">TOTAL</text>`;
-  document.getElementById("donutLegend").innerHTML=cats.map((c,i)=>`<div class="legend-item"><div class="legend-sw" style="background:${cols[i]}"></div><span class="legend-lbl">${c}</span><span class="legend-n" style="color:${cols[i]}">${counts[i]}</span></div>`).join("");
+function doLogout(){
+  // Record logout
+  const last=loginHistory.find(h=>h.userId===currentUser?.id&&!h.logoutAt);
+  if(last){last.logoutAt=new Date();const ms=Date.now()-sessionStart;last.duration=ms;}
+  currentUser=null;sessionStart=null;
+  if(isAdmin)lockAdmin();
+  document.getElementById("appShell").style.display="none";
+  document.getElementById("loginScreen").style.display="flex";
+  document.getElementById("loginUser").value="";
+  document.getElementById("loginPass").value="";
+  document.getElementById("loginError").textContent="";
 }
 
-// ── FN BARS ───────────────────────────────────────────────────────────────────
-function renderFnBars(){
-  const fns=[...new Set(employees.map(e=>e.function))].sort(),max=Math.max(...fns.map(f=>employees.filter(e=>e.function===f).length)),pal=["#1a56db","#0a7c5c","#6d28d9","#b45309","#9d174d","#4b5563","#92400e","#374151","#4338ca"];
-  document.getElementById("fnBreakdown").innerHTML=fns.map((f,i)=>{const n=employees.filter(e=>e.function===f).length;return`<div class="fn-row"><div class="fn-row-lbl">${f.replace(" Services","").replace(" Management","")}</div><div class="fn-bar-bg"><div class="fn-bar" style="width:${(n/max)*100}%;background:${pal[i%pal.length]}"></div></div><div class="fn-row-n" style="color:${pal[i%pal.length]}">${n}</div></div>`;}).join("");
+// ═══════════════════════════════════════════════════════════════
+// TAB NAV
+// ═══════════════════════════════════════════════════════════════
+function getVisibleTabs(){
+  if(!currentUser)return[];
+  return tabDefs.filter(t=>{
+    if(t.hidden&&!isAdmin)return false;
+    if(currentUser.role==="admin")return true;
+    return currentUser.visibleTabs.includes(t.id)&&!t.hidden;
+  });
 }
 
-// ── MONTHLY REPORTS ───────────────────────────────────────────────────────────
-function renderReportChips(){
-  document.getElementById("reportChips").innerHTML=monthlyReports.map((r,i)=>`<span class="chip">${r}<button class="chip-del" onclick="deleteReport(${i})" title="Remove">×</button></span>`).join("");
+function renderSuperNav(){
+  const visible=getVisibleTabs();
+  document.getElementById("superNav").innerHTML=visible.map(t=>`
+    <button class="super-tab ${currentTab===t.id?'active':''}" onclick="switchSuperTab('${t.id}')">
+      ${t.emoji} ${t.label}
+      <span class="hide-tab-btn" onclick="event.stopPropagation();toggleHideTab('${t.id}')" title="Hide">✕</span>
+    </button>`).join("");
 }
-function openReportModal(){
-  renderReportEditList();
-  document.getElementById("f_reportName").value="";
-  document.getElementById("reportModal").classList.add("open");
+
+function switchSuperTab(id){currentTab=id;renderSuperNav();renderMainContent();}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+const getCat=e=>{const s=e.allocationStatus;if(["Client Servicing","Project Management","Practice Lead","System Admin","People Practices","Corporate Management","Finance","DevOps"].includes(s))return"Management";if(s==="Available")return"Available";if(s==="Partially Available")return"Partial";return"Allocated";};
+const catCol=c=>({Available:"var(--available)",Partial:"var(--partial)",Allocated:"var(--alloc)",Management:"var(--mgmt)"}[c]||"var(--mgmt)");
+const fnCls=fn=>({"Account Management":"fn-account","Content Services":"fn-content","Creative Services":"fn-creative","Marketing Services":"fn-marketing","Technology Services":"fn-technology","Operations":"fn-operations","People Practices":"fn-people","Corporate Management":"fn-corporate","Finance":"fn-finance"}[fn]||"");
+const allocCell=(pct,cat)=>{if(pct===null||pct===undefined)return`<span style="color:var(--text-4)">—</span>`;const c=catCol(cat);return`<div class="alloc-cell"><div class="alloc-bg"><div class="alloc-fill" style="width:${pct}%;background:${c}"></div></div><span class="alloc-pct" style="color:${c}">${pct}%</span></div>`;};
+const statusBadge=e=>{const cat=getCat(e),dc={Available:"d-av",Partial:"d-pt",Allocated:"d-al",Management:"d-mg"}[cat],lbl=cat==="Allocated"?e.allocationStatus:cat;return`<div class="sdot"><div class="dot ${dc}"></div>${lbl}</div>`;};
+const H=k=>headings[k]||k;
+const eBtn=k=>`<button class="edit-title-btn" onclick="openTitleModal('${k}')">✏️</button>`;
+const parseAmt=s=>{if(!s||s==="-"||s==="")return 0;return parseInt(s.replace(/,/g,""))||0;};
+const regColors={"ANZ":"#0369a1","APAC":"#15803d","EUR":"#7e22ce","INDIA":"#c2410c","NAM":"#b91c1c","Internal":"#475569"};
+const fmtDur=ms=>{if(!ms)return"—";const m=Math.floor(ms/60000),h=Math.floor(m/60),rm=m%60;return h>0?`${h}h ${rm}m`:`${rm}m`;};
+const fmtTime=d=>{if(!d)return"—";return new Date(d).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});};
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN CONTENT ROUTER
+// ═══════════════════════════════════════════════════════════════
+function renderMainContent(){
+  const mc=document.getElementById("mainContent");mc.innerHTML="";
+  if(currentTab==="overview"){mc.innerHTML=buildOverview();renderStats();renderDonut();renderFnBars();renderReportChips();renderPendingGrid();renderAvailGrid();}
+  else if(currentTab==="roster"){mc.innerHTML=buildRoster();renderTable();}
+  else if(currentTab==="availability"){mc.innerHTML=buildAvailability();populateFilters();renderAvailability();}
+  else if(currentTab==="forecast"){mc.innerHTML=buildForecast();renderAllocNotes();renderRetainers();renderForecastTable();}
+  else if(currentTab==="staffing-rev"){mc.innerHTML=buildStaffingOverview(true);renderStaffingOverview(true);}
+  else if(currentTab==="staffing-detail-rev"){mc.innerHTML=buildStaffingDetail(true);renderStaffingDetail(true);}
+  else if(currentTab==="staffing"){mc.innerHTML=buildStaffingOverview(false);renderStaffingOverview(false);}
+  else if(currentTab==="staffing-detail"){mc.innerHTML=buildStaffingDetail(false);renderStaffingDetail(false);}
+  else if(currentTab==="admin-portal"){mc.innerHTML="";mc.className="";renderAdminPortal(mc);}
 }
-function renderReportEditList(){
-  document.getElementById("reportEditList").innerHTML=monthlyReports.map((r,i)=>`<span class="chip" style="background:var(--surface2)">${r}<button class="chip-del" style="display:inline" onclick="deleteReport(${i});renderReportEditList()" title="Remove">×</button></span>`).join("");
-}
-function addReport(){
-  const v=document.getElementById("f_reportName").value.trim();
-  if(!v)return;
-  monthlyReports.push(v);
-  document.getElementById("f_reportName").value="";
-  renderReportChips();renderReportEditList();
-  showToast("✓ Report added");
-}
+
+// ═══════════════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════════════
+function buildOverview(){return`
+  <div class="stats-row" id="statsRow"></div>
+  <div class="charts-row">
+    <div class="chart-card"><div class="chart-label">Allocation Status</div>
+      <div class="donut-wrap"><svg width="110" height="110" id="donutSvg" viewBox="0 0 110 110"></svg><div class="donut-legend" id="donutLegend"></div></div>
+    </div>
+    <div class="chart-card"><div class="chart-label">Headcount by Function</div><div class="fn-breakdown" id="fnBreakdown"></div></div>
+  </div>
+  <div class="notice-strip">
+    <span style="font-size:14px;flex-shrink:0;margin-top:1px">📋</span>
+    <div class="notice-text"><strong>${H('monthly-title')}${eBtn('monthly-title')}</strong>: The following reports carry shared effort across teams.<div class="chips" id="reportChips"></div></div>
+    <button class="btn-icon edit-only" style="flex-shrink:0;align-self:flex-start" onclick="openReportModal()">✏️</button>
+  </div>
+  <div class="section-header-row">
+    <div><span class="section-title">${H('pending-title')}${eBtn('pending-title')}</span><br><span style="font-size:11.5px;color:var(--text-3)">${H('pending-sub')}</span></div>
+    <button class="btn-primary btn-sm edit-only" onclick="openPendingModal(null)">+ Add Task</button>
+  </div>
+  <div class="pending-grid" id="pendingGrid"></div>
+  <div class="section-header-row"><span class="section-title">${H('avail-title')}${eBtn('avail-title')}</span></div>
+  <div class="avail-grid" id="availGrid"></div>`;}
+
+function renderStats(){const el=document.getElementById("statsRow");if(!el)return;const t=employees.length,av=employees.filter(e=>getCat(e)==="Available").length,pt=employees.filter(e=>getCat(e)==="Partial").length,al=employees.filter(e=>getCat(e)==="Allocated").length,mg=employees.filter(e=>getCat(e)==="Management").length;el.innerHTML=[{lbl:"Total Headcount",val:t,sub:"across all functions",col:"var(--accent)",acc:"#1a56db"},{lbl:"Available",val:av,sub:"ready for assignment",col:"var(--available)",acc:"#0a7c5c"},{lbl:"Partially Available",val:pt,sub:"remaining capacity",col:"var(--partial)",acc:"#b45309"},{lbl:"Fully Allocated",val:al,sub:"on active engagements",col:"var(--alloc)",acc:"#1a56db"},{lbl:"Mgmt / Support",val:mg,sub:"no fixed allocation",col:"var(--mgmt)",acc:"#4b5563"}].map(c=>`<div class="stat-card"><div class="stat-accent" style="background:${c.acc}"></div><div class="stat-label">${c.lbl}</div><div class="stat-value" style="color:${c.col}">${c.val}</div><div class="stat-sub">${c.sub}</div></div>`).join("");}
+
+function renderDonut(){const el=document.getElementById("donutSvg");if(!el)return;const cats=["Available","Partial","Allocated","Management"],cols=["#0a7c5c","#b45309","#1a56db","#6b7280"],counts=cats.map(c=>employees.filter(e=>getCat(e)===c).length),total=counts.reduce((a,b)=>a+b,0);let a=-Math.PI/2,paths="";const cx=55,cy=55,r=44,ir=28;counts.forEach((n,i)=>{if(!n)return;const sw=(n/total)*2*Math.PI,x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(a+sw),y2=cy+r*Math.sin(a+sw),xi1=cx+ir*Math.cos(a),yi1=cy+ir*Math.sin(a),xi2=cx+ir*Math.cos(a+sw),yi2=cy+ir*Math.sin(a+sw),lg=sw>Math.PI?1:0;paths+=`<path d="M${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${ir},${ir} 0 ${lg},0 ${xi1},${yi1} Z" fill="${cols[i]}"/>`;a+=sw;});el.innerHTML=paths+`<text x="55" y="51" text-anchor="middle" font-family="Playfair Display,serif" font-size="16" font-weight="700" fill="#111827">${total}</text><text x="55" y="64" text-anchor="middle" font-family="Outfit,sans-serif" font-size="8" fill="#9ca3af">TOTAL</text>`;const dl=document.getElementById("donutLegend");if(dl)dl.innerHTML=cats.map((c,i)=>`<div class="legend-item"><div class="legend-sw" style="background:${cols[i]}"></div><span class="legend-lbl">${c}</span><span class="legend-n" style="color:${cols[i]}">${counts[i]}</span></div>`).join("");}
+
+function renderFnBars(){const el=document.getElementById("fnBreakdown");if(!el)return;const fns=[...new Set(employees.map(e=>e.function))].sort(),max=Math.max(...fns.map(f=>employees.filter(e=>e.function===f).length)),pal=["#1a56db","#0a7c5c","#6d28d9","#b45309","#9d174d","#4b5563","#92400e","#374151","#4338ca"];el.innerHTML=fns.map((f,i)=>{const n=employees.filter(e=>e.function===f).length;return`<div class="fn-row"><div class="fn-row-lbl">${f.replace(" Services","").replace(" Management","")}</div><div class="fn-bar-bg"><div class="fn-bar" style="width:${(n/max)*100}%;background:${pal[i%pal.length]}"></div></div><div class="fn-row-n" style="color:${pal[i%pal.length]}">${n}</div></div>`;}).join("");}
+
+function renderReportChips(){const el=document.getElementById("reportChips");if(!el)return;el.innerHTML=monthlyReports.map((r,i)=>`<span class="chip">${r}<button class="chip-del" onclick="deleteReport(${i})">×</button></span>`).join("");}
+function openReportModal(){renderReportEditList();document.getElementById("f_reportName").value="";document.getElementById("reportModal").classList.add("open");}
+function renderReportEditList(){const el=document.getElementById("reportEditList");if(el)el.innerHTML=monthlyReports.map((r,i)=>`<span class="chip" style="background:var(--surface2)">${r}<button class="chip-del" style="display:inline" onclick="deleteReport(${i});renderReportEditList()">×</button></span>`).join("");}
+function addReport(){const v=document.getElementById("f_reportName").value.trim();if(!v)return;monthlyReports.push(v);document.getElementById("f_reportName").value="";renderReportChips();renderReportEditList();showToast("✓ Report added");}
 function deleteReport(i){monthlyReports.splice(i,1);renderReportChips();}
 
-// ── PENDING TASKS ─────────────────────────────────────────────────────────────
-function renderPendingGrid(){
-  document.getElementById("pendingGrid").innerHTML=pendingTasks.length?pendingTasks.map((t,i)=>`
-    <div class="pending-card">
-      <div class="pending-dot"></div>
-      <div class="pending-info">
-        <div class="pending-name">${t}</div>
-        <div class="pending-tag-pill">Pending</div>
-      </div>
-      <div class="pending-actions">
-        <button class="btn-icon" onclick="openPendingModal(${i})">✏️</button>
-        <button class="btn-icon del" onclick="deletePending(${i})">🗑</button>
-      </div>
-    </div>`).join(""):`<div class="empty-state" style="padding:20px">No pending tasks.</div>`;
-}
-function openPendingModal(idx){
-  editingPendingIdx=idx;
-  document.getElementById("pendingModalTitle").textContent=idx===null?"Add Pending Task":"Edit Pending Task";
-  document.getElementById("f_pendingName").value=idx!==null?pendingTasks[idx]:"";
-  document.getElementById("pendingModal").classList.add("open");
-}
-function savePendingTask(){
-  const v=document.getElementById("f_pendingName").value.trim();if(!v)return;
-  if(editingPendingIdx!==null)pendingTasks[editingPendingIdx]=v;else pendingTasks.push(v);
-  closeModal("pendingModal");renderPendingGrid();
-  showToast(editingPendingIdx!==null?"✓ Task updated":"✓ Task added");
-}
+function renderPendingGrid(){const el=document.getElementById("pendingGrid");if(!el)return;el.innerHTML=pendingTasks.length?pendingTasks.map((t,i)=>`<div class="pending-card"><div class="pending-dot"></div><div class="pending-info"><div class="pending-name">${t}</div><div class="pending-tag-pill">Pending</div></div><div class="pending-actions"><button class="btn-icon" onclick="openPendingModal(${i})">✏️</button><button class="btn-icon del" onclick="deletePending(${i})">🗑</button></div></div>`).join(""):`<div class="empty-state" style="padding:16px">No pending tasks.</div>`;}
+function openPendingModal(idx){editingPendingIdx=idx;document.getElementById("pendingModalTitle").textContent=idx===null?"Add Pending Task":"Edit Pending Task";document.getElementById("f_pendingName").value=idx!==null?pendingTasks[idx]:"";document.getElementById("pendingModal").classList.add("open");}
+function savePendingTask(){const v=document.getElementById("f_pendingName").value.trim();if(!v)return;if(editingPendingIdx!==null)pendingTasks[editingPendingIdx]=v;else pendingTasks.push(v);closeModal("pendingModal");renderPendingGrid();showToast(editingPendingIdx!==null?"✓ Task updated":"✓ Task added");}
 function deletePending(i){pendingTasks.splice(i,1);renderPendingGrid();showToast("🗑 Task removed");}
 
-// ── ALLOC NOTES ───────────────────────────────────────────────────────────────
-function renderAllocNotes(){
-  document.getElementById("allocNotesBox").innerHTML=`<strong>ℹ️ Allocation Notes</strong><ul style="margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:6px;list-style:disc">${allocNotes.map((n,i)=>`<li class="note-item"><span class="note-item-text">${n}</span><button class="note-item-del" onclick="deleteNote(${i})" title="Remove">×</button></li>`).join("")}</ul>`;
-}
-function openNotesModal(){
-  renderNotesEditList();
-  document.getElementById("f_newNote").value="";
-  document.getElementById("notesModal").classList.add("open");
-}
-function renderNotesEditList(){
-  document.getElementById("notesEditList").innerHTML=allocNotes.map((n,i)=>`
-    <div style="display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px">
-      <span style="flex:1;font-size:12.5px;color:var(--text-2)">${n}</span>
-      <button class="btn-icon del" style="flex-shrink:0" onclick="deleteNote(${i});renderNotesEditList()">🗑</button>
-    </div>`).join("");
-}
-function addNote(){
-  const v=document.getElementById("f_newNote").value.trim();if(!v)return;
-  allocNotes.push(v);document.getElementById("f_newNote").value="";
-  renderAllocNotes();renderNotesEditList();showToast("✓ Note added");
-}
-function deleteNote(i){allocNotes.splice(i,1);renderAllocNotes();}
+function renderAvailGrid(){const el=document.getElementById("availGrid");if(!el)return;const list=employees.filter(e=>["Available","Partial"].includes(getCat(e)));el.innerHTML=list.length?list.map(e=>{const cat=getCat(e),free=100-(e.allocationPct??0),c=catCol(cat),tag=cat==="Partial"?"tag-partial":"tag-avail";return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg"><div class="av-meter-fill" style="width:${free}%;background:${c}"></div></div><div class="av-footer"><span class="av-free" style="color:${c}">${free}% free</span><span class="stag ${tag}">${cat==="Partial"?"Partial":"Available"}</span></div></div>`;}).join(""):`<div class="empty-state">No available capacity.</div>`;}
 
-// ── RETAINERS ─────────────────────────────────────────────────────────────────
-function renderRetainers(){
-  document.getElementById("retainerGrid").innerHTML=retainers.map(r=>`
-    <div class="retainer-card">
-      <div class="card-admin-actions">
-        <button class="btn-icon" onclick="openRetainerModal(${r.id})">✏️</button>
-        <button class="btn-icon del" onclick="deleteRetainer(${r.id})">🗑</button>
-      </div>
-      <div class="ret-name">${r.name}</div>
-      <div class="ret-meta">${r.meta}</div>
-      <div class="ret-alloc">
-        <span class="ret-alloc-lbl">${r.label}</span>
-        <span class="ret-alloc-val" style="color:${r.color}">${r.pct}%</span>
-      </div>
-    </div>`).join("");
-}
-function openRetainerModal(id){
-  editingRetId=id;
-  const r=id?retainers.find(x=>x.id===id):null;
-  document.getElementById("retainerModalTitle").textContent=id?"Edit Retainer":"Add Retainer";
-  document.getElementById("f_retName").value=r?.name||"";
-  document.getElementById("f_retMeta").value=r?.meta||"";
-  document.getElementById("f_retLabel").value=r?.label||"Max Allocation";
-  document.getElementById("f_retPct").value=r?.pct||"";
-  document.getElementById("f_retColor").value=r?.color||"var(--available)";
-  document.getElementById("retainerModal").classList.add("open");
-}
-function saveRetainer(){
-  const r={id:editingRetId??nextRetId++,name:document.getElementById("f_retName").value.trim(),meta:document.getElementById("f_retMeta").value.trim(),label:document.getElementById("f_retLabel").value,pct:Number(document.getElementById("f_retPct").value),color:document.getElementById("f_retColor").value};
-  if(!r.name)return;
-  if(editingRetId){const i=retainers.findIndex(x=>x.id===editingRetId);retainers[i]=r;}else retainers.push(r);
-  closeModal("retainerModal");renderRetainers();
-  showToast(editingRetId?"✓ Retainer updated":"✓ Retainer added");
-}
-function deleteRetainer(id){retainers=retainers.filter(r=>r.id!==id);renderRetainers();showToast("🗑 Retainer removed");}
+// ═══════════════════════════════════════════════════════════════
+// ROSTER
+// ═══════════════════════════════════════════════════════════════
+function buildRoster(){return`
+  <div class="section-header-row">
+    <span class="section-title">${H('roster-title')}${eBtn('roster-title')}</span>
+    <button class="btn-primary btn-sm edit-only" onclick="openAddModal()">+ Add Employee</button>
+  </div>
+  <div class="filter-bar">
+    <input class="filter-input" id="searchInput" placeholder="🔍 Search…" oninput="renderTable()">
+    <select class="filter-select" id="fnFilter" onchange="renderTable()"><option value="">All Functions</option></select>
+    <select class="filter-select" id="statusFilter" onchange="renderTable()"><option value="">All Statuses</option><option value="Available">Available</option><option value="Partial">Partially Available</option><option value="Allocated">Allocated</option><option value="FTE">FTE Engagement</option><option value="Management">Management</option></select>
+    <select class="filter-select" id="specFilter" onchange="renderTable()"><option value="">All Specialisations</option></select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th onclick="sortTable('employee')">Employee</th><th onclick="sortTable('function')">Function</th><th onclick="sortTable('specialisation')">Specialisation</th><th onclick="sortTable('allocationStatus')">Status</th><th onclick="sortTable('allocationPct')">Allocation %</th><th>Notes</th><th></th></tr></thead>
+    <tbody id="rosterTbody"></tbody>
+  </table></div>`;}
 
-// ── AVAIL GRID ────────────────────────────────────────────────────────────────
-function renderAvailGrid(){
-  const list=employees.filter(e=>["Available","Partial"].includes(getCat(e)));
-  document.getElementById("availGrid").innerHTML=list.length?list.map(e=>{const cat=getCat(e),pct=e.allocationPct??0,free=100-pct,c=catCol(cat),tag=cat==="Partial"?"tag-partial":"tag-avail";return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg"><div class="av-meter-fill" style="width:${free}%;background:${c}"></div></div><div class="av-footer"><span class="av-free" style="color:${c}">${free}% free</span><span class="stag ${tag}">${cat==="Partial"?"Partial":"Available"}</span></div></div>`;}).join(""):`<div class="empty-state">No available capacity found.</div>`;
-}
-
-// ── TABLE ─────────────────────────────────────────────────────────────────────
 function renderTable(){
-  populateFilters();
-  let data=[...employees];
+  populateFilters();let data=[...employees];
   const q=(document.getElementById("searchInput")?.value||"").toLowerCase(),fn=document.getElementById("fnFilter")?.value||"",st=document.getElementById("statusFilter")?.value||"",sp=document.getElementById("specFilter")?.value||"";
   if(q)data=data.filter(e=>[e.employee,e.function,e.specialisation,e.allocationStatus,e.notes||""].join(" ").toLowerCase().includes(q));
   if(fn)data=data.filter(e=>e.function===fn);if(sp)data=data.filter(e=>e.specialisation===sp);
   if(st)data=data.filter(e=>{const c=getCat(e);if(st==="Available")return c==="Available";if(st==="Partial")return c==="Partial";if(st==="Allocated")return c==="Allocated";if(st==="FTE")return e.allocationStatus==="FTE Engagement";if(st==="Management")return c==="Management";return true;});
   if(sortKey)data.sort((a,b)=>{let va=a[sortKey]??"",vb=b[sortKey]??"";if(typeof va==="number")return sortAsc?va-vb:vb-va;return sortAsc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));});
-  document.getElementById("rosterTbody").innerHTML=data.length?data.map(e=>`<tr><td><strong style="color:var(--text)">${e.employee}</strong></td><td><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></td><td style="color:var(--text-2)">${e.specialisation}</td><td>${statusBadge(e)}</td><td>${allocCell(e.allocationPct,getCat(e))}</td><td class="notes-cell" title="${e.notes||""}">${e.notes||"—"}</td><td><button class="btn-edit" onclick="openEditModal(${e.id})">Edit</button></td></tr>`).join(""):`<tr><td colspan="7"><div class="empty-state">No results match your filters.</div></td></tr>`;
-}
+  const el=document.getElementById("rosterTbody");if(!el)return;
+  el.innerHTML=data.length?data.map(e=>`<tr><td><strong>${e.employee}</strong></td><td><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></td><td style="color:var(--text-2)">${e.specialisation}</td><td>${statusBadge(e)}</td><td>${allocCell(e.allocationPct,getCat(e))}</td><td class="notes-cell" title="${e.notes||""}">${e.notes||"—"}</td><td style="display:flex;gap:4px"><button class="btn-edit" onclick="openEditModal(${e.id})">Edit</button><button class="btn-del" onclick="deleteEmployee(${e.id})">Delete</button></td></tr>`).join(""):`<tr><td colspan="7"><div class="empty-state">No results.</div></td></tr>`;}
+
 function sortTable(k){if(sortKey===k)sortAsc=!sortAsc;else{sortKey=k;sortAsc=true;}renderTable();}
 function populateFilters(){
   const fn=document.getElementById("fnFilter"),sp=document.getElementById("specFilter"),af=document.getElementById("availFnFilter");
   if(fn&&fn.options.length<=1)[...new Set(employees.map(e=>e.function))].sort().forEach(f=>{fn.add(new Option(f,f));if(af)af.add(new Option(f,f));});
   if(sp&&sp.options.length<=1)[...new Set(employees.map(e=>e.specialisation))].sort().forEach(s=>sp.add(new Option(s,s)));
 }
+function deleteEmployee(id){if(!confirm("Delete this employee?"))return;employees=employees.filter(e=>e.id!==id);renderTable();showToast("🗑 Employee deleted");}
 
-// ── AVAILABILITY ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// AVAILABILITY
+// ═══════════════════════════════════════════════════════════════
+function buildAvailability(){return`
+  <div class="section-header-row">
+    <span class="section-title">${H('avail-tab-title')}${eBtn('avail-tab-title')}</span>
+    <select class="filter-select" id="availFnFilter" onchange="renderAvailability()"><option value="">All Functions</option></select>
+  </div>
+  <div class="avail-grid" id="availFullGrid"></div>`;}
+
 function renderAvailability(){
   const fn=document.getElementById("availFnFilter")?.value||"";
   const list=fn?employees.filter(e=>e.function===fn):employees;
   const tm={Available:"tag-avail",Partial:"tag-partial",Allocated:"tag-alloc",Management:"tag-mgmt"};
-  document.getElementById("availFullGrid").innerHTML=list.map(e=>{const cat=getCat(e),pct=e.allocationPct,free=pct!==null?100-pct:null,c=catCol(cat);return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg">${free!==null?`<div class="av-meter-fill" style="width:${free}%;background:${c}"></div>`:""}</div><div class="av-footer"><span class="av-free" style="color:${c}">${free!==null?free+"% free":"N/A"}</span><span class="stag ${tm[cat]}">${cat}</span></div>${e.notes?`<div style="margin-top:8px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);padding-top:7px">${e.notes}</div>`:""}</div>`;}).join("");
+  const el=document.getElementById("availFullGrid");if(!el)return;
+  el.innerHTML=list.map(e=>{const cat=getCat(e),pct=e.allocationPct,free=pct!==null?100-pct:null,c=catCol(cat);return`<div class="avail-card"><div class="av-name">${e.employee}</div><div class="av-spec">${e.specialisation}</div><div class="av-fn"><span class="fn-pill ${fnCls(e.function)}">${e.function}</span></div><div class="av-meter-bg">${free!==null?`<div class="av-meter-fill" style="width:${free}%;background:${c}"></div>`:""}</div><div class="av-footer"><span class="av-free" style="color:${c}">${free!==null?free+"% free":"N/A"}</span><span class="stag ${tm[cat]}">${cat}</span></div>${e.notes?`<div style="margin-top:5px;font-size:10.5px;color:var(--text-3);border-top:1px solid var(--border);padding-top:5px">${e.notes}</div>`:""}</div>`;}).join("");}
+
+// ═══════════════════════════════════════════════════════════════
+// FORECAST
+// ═══════════════════════════════════════════════════════════════
+function buildForecast(){return`
+  <div class="forecast-note" id="allocNotesBox"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:-12px;margin-bottom:18px"><button class="btn-icon edit-only" onclick="openNotesModal()">✏️ Edit Notes</button></div>
+  <div class="section-header-row"><span class="section-title">${H('forecast-title')}${eBtn('forecast-title')}</span><button class="btn-primary btn-sm edit-only" onclick="openRetainerModal(null)">+ Add</button></div>
+  <div class="retainer-grid" id="retainerGrid"></div>
+  <div class="section-header-row"><span class="section-title">${H('capacity-title')}${eBtn('capacity-title')}</span></div>
+  <div class="table-wrap"><table><thead><tr><th>Function</th><th>Total HC</th><th>Fully Allocated</th><th>Partially Available</th><th>Available</th><th>Mgmt</th><th>Available FTE</th></tr></thead><tbody id="forecastTbody"></tbody></table></div>`;}
+
+function renderAllocNotes(){const el=document.getElementById("allocNotesBox");if(!el)return;el.innerHTML=`<strong>ℹ️ ${H('forecast-note-title')}${eBtn('forecast-note-title')}</strong><ul style="margin-top:8px;padding-left:18px;display:flex;flex-direction:column;gap:5px;list-style:disc">${allocNotes.map((n,i)=>`<li class="note-item"><span class="note-item-text">${n}</span><button class="note-item-del" onclick="deleteNote(${i})">×</button></li>`).join("")}</ul>`;}
+function openNotesModal(){renderNotesEditList();document.getElementById("f_newNote").value="";document.getElementById("notesModal").classList.add("open");}
+function renderNotesEditList(){const el=document.getElementById("notesEditList");if(el)el.innerHTML=allocNotes.map((n,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px"><span style="flex:1;font-size:12px;color:var(--text-2)">${n}</span><button class="btn-icon del" onclick="deleteNote(${i});renderNotesEditList()">🗑</button></div>`).join("");}
+function addNote(){const v=document.getElementById("f_newNote").value.trim();if(!v)return;allocNotes.push(v);document.getElementById("f_newNote").value="";renderAllocNotes();renderNotesEditList();showToast("✓ Note added");}
+function deleteNote(i){allocNotes.splice(i,1);renderAllocNotes();}
+function renderRetainers(){const el=document.getElementById("retainerGrid");if(!el)return;el.innerHTML=retainers.map(r=>`<div class="retainer-card"><div class="card-admin-actions"><button class="btn-icon" onclick="openRetainerModal(${r.id})">✏️</button><button class="btn-icon del" onclick="deleteRetainer(${r.id})">🗑</button></div><div class="ret-name">${r.name}</div><div class="ret-meta">${r.meta}</div><div class="ret-alloc"><span class="ret-alloc-lbl">${r.label}</span><span class="ret-alloc-val" style="color:${r.color}">${r.pct}%</span></div></div>`).join("");}
+function openRetainerModal(id){editingRetId=id;const r=id?retainers.find(x=>x.id===id):null;document.getElementById("retainerModalTitle").textContent=id?"Edit Retainer":"Add Retainer";document.getElementById("f_retName").value=r?.name||"";document.getElementById("f_retMeta").value=r?.meta||"";document.getElementById("f_retLabel").value=r?.label||"Max Allocation";document.getElementById("f_retPct").value=r?.pct||"";document.getElementById("f_retColor").value=r?.color||"var(--available)";document.getElementById("retainerModal").classList.add("open");}
+function saveRetainer(){const r={id:editingRetId??nextRetId++,name:document.getElementById("f_retName").value.trim(),meta:document.getElementById("f_retMeta").value.trim(),label:document.getElementById("f_retLabel").value,pct:Number(document.getElementById("f_retPct").value),color:document.getElementById("f_retColor").value};if(!r.name)return;if(editingRetId){const i=retainers.findIndex(x=>x.id===editingRetId);retainers[i]=r;}else retainers.push(r);closeModal("retainerModal");renderRetainers();showToast(editingRetId?"✓ Updated":"✓ Added");}
+function deleteRetainer(id){retainers=retainers.filter(r=>r.id!==id);renderRetainers();showToast("🗑 Removed");}
+function renderForecastTable(){const el=document.getElementById("forecastTbody");if(!el)return;const fns=[...new Set(employees.map(e=>e.function))].sort();el.innerHTML=fns.map(fn=>{const g=employees.filter(e=>e.function===fn),al=g.filter(e=>getCat(e)==="Allocated").length,pt=g.filter(e=>getCat(e)==="Partial").length,av=g.filter(e=>getCat(e)==="Available").length,mg=g.filter(e=>getCat(e)==="Management").length;return`<tr><td><span class="fn-pill ${fnCls(fn)}">${fn}</span></td><td style="font-weight:700">${g.length}</td><td style="color:var(--alloc);font-weight:600">${al}</td><td style="color:var(--partial);font-weight:600">${pt}</td><td style="color:var(--available);font-weight:600">${av}</td><td style="color:var(--mgmt)">${mg}</td><td><strong style="color:var(--available)">${(av+pt*.5).toFixed(1)} FTE</strong></td></tr>`;}).join("");}
+
+// ═══════════════════════════════════════════════════════════════
+// STAFFING OVERVIEW (withRevenue param)
+// ═══════════════════════════════════════════════════════════════
+function buildStaffingOverview(withRevenue){const id=withRevenue?"staffing-rev":"staffing";return`
+  <div class="section-header-row"><span class="section-title">${H(id+'-title')}${eBtn(id+'-title')}</span></div>
+  <div class="staffing-stats" id="staffingStats"></div>
+  <div class="section-header-row" style="margin-bottom:12px"><span class="section-title" style="font-size:15px">${withRevenue?H('region-summary-title')+eBtn('region-summary-title'):"Clients by Region"}</span></div>
+  <div class="region-cards" id="regionCards"></div>
+  <div class="section-header-row" style="margin-bottom:12px"><span class="section-title" style="font-size:15px">Client Summary</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Region</th><th>Client</th><th>Projects</th>${withRevenue?`<th>Total Revenue (₹)</th>`:`<th>Staff Lines</th>`}<th>Resources</th></tr></thead>
+    <tbody id="clientSummaryTbody"></tbody>
+  </table></div>`;}
+
+function renderStaffingOverview(withRevenue){
+  const revRows=staffingRows.filter(r=>r.type==="Revenue");
+  const totalRev=revRows.reduce((s,r)=>s+parseAmt(r.amount),0);
+  const totalClients=[...new Set(staffingRows.map(r=>r.client))].length;
+  const totalProj=[...new Set(staffingRows.map(r=>r.region+r.client+r.description))].length;
+  const regions=[...new Set(staffingRows.map(r=>r.region))];
+  const el=document.getElementById("staffingStats");if(!el)return;
+  const statsData=withRevenue?[
+    {lbl:"Total Revenue",val:"₹"+Math.round(totalRev/100000)+"L",sub:"all regions",col:"var(--available)",acc:"#0a7c5c"},
+    {lbl:"Regions",val:regions.length,sub:"active geographies",col:"var(--accent)",acc:"#1a56db"},
+    {lbl:"Clients",val:totalClients,sub:"active clients",col:"var(--fte)",acc:"#6d28d9"},
+    {lbl:"Projects",val:totalProj,sub:"project lines",col:"var(--partial)",acc:"#b45309"},
+  ]:[
+    {lbl:"Regions",val:regions.length,sub:"active geographies",col:"var(--accent)",acc:"#1a56db"},
+    {lbl:"Clients",val:totalClients,sub:"active clients",col:"var(--fte)",acc:"#6d28d9"},
+    {lbl:"Projects",val:totalProj,sub:"project lines",col:"var(--partial)",acc:"#b45309"},
+    {lbl:"Staff Lines",val:staffingRows.filter(r=>r.type==="Staff Cost").length,sub:"resource assignments",col:"var(--available)",acc:"#0a7c5c"},
+  ];
+  el.innerHTML=statsData.map(c=>`<div class="stat-card"><div class="stat-accent" style="background:${c.acc}"></div><div class="stat-label">${c.lbl}</div><div class="stat-value" style="color:${c.col}">${c.val}</div><div class="stat-sub">${c.sub}</div></div>`).join("");
+
+  const rc=document.getElementById("regionCards");if(!rc)return;
+  rc.innerHTML=regions.map(reg=>{
+    const rows=staffingRows.filter(r=>r.region===reg&&r.type==="Revenue");
+    const rev=rows.reduce((s,r)=>s+parseAmt(r.amount),0);
+    const clients=[...new Set(staffingRows.filter(r=>r.region===reg).map(r=>r.client))].length;
+    const col=regColors[reg]||"#374151";
+    return`<div class="region-card"><div style="margin-bottom:6px"><span class="reg-pill reg-${reg}">${reg}</span></div><div class="region-card-val">${withRevenue?"₹"+Math.round(rev/100000)+"L":clients+" client"+(clients!==1?"s":"")}</div><div class="region-card-sub">${withRevenue?clients+" client"+(clients!==1?"s":""):staffingRows.filter(r=>r.region===reg&&r.type==="Staff Cost").length+" staff lines"}</div></div>`;
+  }).join("");
+
+  const tb=document.getElementById("clientSummaryTbody");if(!tb)return;
+  const clients=[...new Set(staffingRows.map(r=>r.region+"||"+r.client))];
+  tb.innerHTML=clients.map(rc2=>{
+    const[reg,cli]=rc2.split("||");
+    const rows=staffingRows.filter(r=>r.region===reg&&r.client===cli);
+    const revAmt=rows.filter(r=>r.type==="Revenue").reduce((s,r)=>s+parseAmt(r.amount),0);
+    const projects=[...new Set(rows.map(r=>r.description))].length;
+    const staffLines=rows.filter(r=>r.type==="Staff Cost").length;
+    const resources=[...new Set(rows.filter(r=>r.resource).map(r=>r.resource))].slice(0,3).join(", ");
+    return`<tr><td><span class="reg-pill reg-${reg}">${reg}</span></td><td><strong>${cli}</strong></td><td>${projects}</td><td>${withRevenue?`<span class="amount-cell">${revAmt>0?"₹"+revAmt.toLocaleString("en-IN"):"—"}</span>`:staffLines}</td><td style="font-size:11.5px;color:var(--text-3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${resources||"—"}</td></tr>`;
+  }).join("");
 }
 
-// ── FORECAST ─────────────────────────────────────────────────────────────────
-function renderForecast(){
-  const fns=[...new Set(employees.map(e=>e.function))].sort();
-  document.getElementById("forecastTbody").innerHTML=fns.map(fn=>{const g=employees.filter(e=>e.function===fn),al=g.filter(e=>getCat(e)==="Allocated").length,pt=g.filter(e=>getCat(e)==="Partial").length,av=g.filter(e=>getCat(e)==="Available").length,mg=g.filter(e=>getCat(e)==="Management").length;return`<tr><td><span class="fn-pill ${fnCls(fn)}">${fn}</span></td><td style="font-weight:700">${g.length}</td><td><span style="color:var(--alloc);font-weight:600">${al}</span></td><td><span style="color:var(--partial);font-weight:600">${pt}</span></td><td><span style="color:var(--available);font-weight:600">${av}</span></td><td style="color:var(--mgmt)">${mg}</td><td><strong style="color:var(--available)">${(av+pt*.5).toFixed(1)} FTE</strong></td></tr>`;}).join("");
+// ═══════════════════════════════════════════════════════════════
+// STAFFING DETAIL (withRevenue param)
+// ═══════════════════════════════════════════════════════════════
+function buildStaffingDetail(withRevenue){const id=withRevenue?"staffing-detail-rev":"staffing-detail";return`
+  <div class="section-header-row">
+    <span class="section-title">${H(id+'-title')}${eBtn(id+'-title')}</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select class="filter-select" id="sRegionFilter" onchange="renderStaffingDetail(${withRevenue})"><option value="">All Regions</option><option>ANZ</option><option>APAC</option><option>EUR</option><option>INDIA</option><option>NAM</option><option>Internal</option></select>
+      <select class="filter-select" id="sClientFilter" onchange="renderStaffingDetail(${withRevenue})"><option value="">All Clients</option></select>
+      <select class="filter-select" id="sTypeFilter" onchange="renderStaffingDetail(${withRevenue})"><option value="">All Types</option><option>Revenue</option><option>Staff Cost</option></select>
+      <button class="btn-primary btn-sm edit-only" onclick="openStaffingModal(null)">+ Add Row</button>
+    </div>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Region</th><th>Client</th><th>Description</th><th>Type</th><th>Resource</th><th>Allocation</th>${withRevenue?`<th>Amount (₹)</th>`:`<th></th>`}</tr></thead>
+    <tbody id="staffingDetailTbody"></tbody>
+  </table></div>`;}
+
+function renderStaffingDetail(withRevenue){
+  const regF=document.getElementById("sRegionFilter")?.value||"",cliF=document.getElementById("sClientFilter")?.value||"",typF=document.getElementById("sTypeFilter")?.value||"";
+  const cf=document.getElementById("sClientFilter");
+  if(cf&&cf.options.length<=1)[...new Set(staffingRows.map(r=>r.client))].sort().forEach(c=>cf.add(new Option(c,c)));
+  let data=[...staffingRows];
+  if(regF)data=data.filter(r=>r.region===regF);if(cliF)data=data.filter(r=>r.client===cliF);if(typF)data=data.filter(r=>r.type===typF);
+  const el=document.getElementById("staffingDetailTbody");if(!el)return;
+  el.innerHTML=data.map(r=>`<tr>
+    <td><span class="reg-pill reg-${r.region}">${r.region}</span></td>
+    <td><strong style="font-size:12px">${r.client}</strong></td>
+    <td style="color:var(--text-2);max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.description}">${r.description}</td>
+    <td>${r.type==="Revenue"?`<span class="rev-badge">Revenue</span>`:`<span class="cost-badge">Staff Cost</span>`}</td>
+    <td style="color:var(--text-2);font-size:12px">${r.resource||"—"}</td>
+    <td style="font-weight:600;color:var(--alloc);font-size:12px">${r.allocation||"—"}</td>
+    <td>${withRevenue?`<span class="amount-cell">${r.amount&&r.amount!=="-"&&r.amount?"₹"+r.amount:"—"}</span>`:`<span style="display:flex;gap:4px"><button class="btn-edit" onclick="openStaffingModal(${r.id})">Edit</button><button class="btn-del" onclick="deleteStaffingRow(${r.id})">Delete</button></span>`}
+    ${withRevenue?`<span style="display:flex;gap:4px;margin-left:4px"><button class="btn-edit" onclick="openStaffingModal(${r.id})">Edit</button><button class="btn-del" onclick="deleteStaffingRow(${r.id})">Delete</button></span>`:""}
+    </td></tr>`).join("");
 }
 
-// ── EMPLOYEE MODAL ────────────────────────────────────────────────────────────
-function openEditModal(id){
-  const e=employees.find(x=>x.id===id);if(!e)return;
-  editingId=id;
-  document.getElementById("modalTitle").textContent="Edit Employee";
-  document.getElementById("modalSub").textContent=e.employee;
-  document.getElementById("f_employee").value=e.employee;
-  document.getElementById("f_function").value=e.function;
-  document.getElementById("f_specialisation").value=e.specialisation;
-  document.getElementById("f_allocationStatus").value=e.allocationStatus;
-  document.getElementById("f_allocationPct").value=e.allocationPct??"";
-  document.getElementById("f_notes").value=e.notes||"";
-  document.getElementById("editModal").classList.add("open");
-}
-function openAddModal(){
-  editingId=null;
-  document.getElementById("modalTitle").textContent="Add Employee";
-  document.getElementById("modalSub").textContent="Fill in the details below";
-  ["f_employee","f_specialisation","f_allocationPct","f_notes"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("editModal").classList.add("open");
-}
-function saveEmployee(){
-  const emp={id:editingId??nextId++,employee:document.getElementById("f_employee").value.trim(),function:document.getElementById("f_function").value,specialisation:document.getElementById("f_specialisation").value.trim(),allocationStatus:document.getElementById("f_allocationStatus").value,allocationPct:document.getElementById("f_allocationPct").value!==""?Number(document.getElementById("f_allocationPct").value):null,notes:document.getElementById("f_notes").value.trim()};
-  if(!emp.employee)return;
-  if(editingId){const i=employees.findIndex(e=>e.id===editingId);employees[i]=emp;}else employees.push(emp);
-  closeModal("editModal");refreshAll();
-  showToast(editingId?"✓ Employee updated":"✓ Employee added");
+function openStaffingModal(id){editingStaffId=id;const r=id?staffingRows.find(x=>x.id===id):null;document.getElementById("staffingModalTitle").textContent=id?"Edit Row":"Add Row";document.getElementById("f_sRegion").value=r?.region||"ANZ";document.getElementById("f_sClient").value=r?.client||"";document.getElementById("f_sDesc").value=r?.description||"";document.getElementById("f_sType").value=r?.type||"Revenue";document.getElementById("f_sAmount").value=r?.amount||"";document.getElementById("f_sResource").value=r?.resource||"";document.getElementById("f_sAlloc").value=r?.allocation||"";document.getElementById("staffingModal").classList.add("open");}
+function saveStaffingRow(){const row={id:editingStaffId??nextStaffId++,region:document.getElementById("f_sRegion").value,client:document.getElementById("f_sClient").value.trim(),description:document.getElementById("f_sDesc").value.trim(),type:document.getElementById("f_sType").value,amount:document.getElementById("f_sAmount").value.trim(),resource:document.getElementById("f_sResource").value.trim(),allocation:document.getElementById("f_sAlloc").value.trim()};if(!row.client)return;if(editingStaffId){const i=staffingRows.findIndex(r=>r.id===editingStaffId);staffingRows[i]=row;}else staffingRows.push(row);closeModal("staffingModal");renderMainContent();showToast(editingStaffId?"✓ Row updated":"✓ Row added");}
+function deleteStaffingRow(id){if(!confirm("Delete this row?"))return;staffingRows=staffingRows.filter(r=>r.id!==id);renderMainContent();showToast("🗑 Deleted");}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN PORTAL
+// ═══════════════════════════════════════════════════════════════
+function renderAdminPortal(mc){
+  mc.className="";
+  mc.innerHTML=`<div style="padding:24px 32px;max-width:1100px">
+    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-family:var(--font-d);font-size:22px;font-weight:700">🛡 Admin Portal</div>
+      <div style="font-size:12.5px;color:var(--text-3);margin-top:3px">Manage users, access and monitor login history</div></div>
+    </div>
+    <div class="portal-tabs">
+      <button class="portal-tab active" onclick="switchPortalTab('users',this)">👥 Users</button>
+      <button class="portal-tab" onclick="switchPortalTab('history',this)">📋 Login History</button>
+    </div>
+    <div class="portal-panel active" id="portalUsers"></div>
+    <div class="portal-panel" id="portalHistory"></div>
+  </div>`;
+  renderPortalUsers();renderPortalHistory();
 }
 
-// ── MODAL HELPERS ─────────────────────────────────────────────────────────────
-function closeModal(id){document.getElementById(id).classList.remove("open");}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
-
-// ── TAB SWITCH ────────────────────────────────────────────────────────────────
-function switchTab(tab){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
-  document.getElementById("tab-"+tab).classList.add("active");
-  document.querySelectorAll(".tab-btn").forEach(b=>{if(b.getAttribute("onclick").includes("'"+tab+"'"))b.classList.add("active");});
-  if(tab==="roster")renderTable();
-  if(tab==="availability"){populateFilters();renderAvailability();}
-  if(tab==="forecast")renderForecast();
+function switchPortalTab(tab,btn){
+  document.querySelectorAll(".portal-tab").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".portal-panel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("portal"+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add("active");
 }
-function refreshAll(){renderStats();renderDonut();renderFnBars();renderReportChips();renderPendingGrid();renderAvailGrid();renderTable();renderAvailability();renderForecast();renderAllocNotes();renderRetainers();}
 
-// ── ADMIN / PASSWORD ──────────────────────────────────────────────────────────
+function renderPortalUsers(){
+  const el=document.getElementById("portalUsers");if(!el)return;
+  const statusMap={active:`<span class="status-active">Active</span>`,pending:`<span class="status-pending">Pending</span>`,disabled:`<span class="status-disabled">Disabled</span>`};
+  el.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn-primary btn-sm" onclick="openAddUserModal(null)">+ Add User</button>
+    </div>
+    ${users.map(u=>`
+      <div class="user-row">
+        <div class="user-row-info">
+          <div class="user-big-avatar">${u.name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="user-row-name">${u.name} ${u.role==="admin"?`<span style="background:#eff4ff;color:var(--accent);border-radius:20px;padding:1px 8px;font-size:10px;font-weight:700;margin-left:4px">Admin</span>`:""}</div>
+            <div class="user-row-email">${u.email}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${statusMap[u.status]||""}
+          <span style="font-size:11.5px;color:var(--text-3)">${u.visibleTabs.length} tabs</span>
+          <button class="btn-edit" style="display:inline-block" onclick="openAddUserModal(${u.id})">Edit</button>
+          <button class="btn-del" style="display:inline-block;${u.id===1?'opacity:.4;pointer-events:none':''}" onclick="deleteUser(${u.id})">Remove</button>
+          <button class="btn-icon" onclick="toggleUserStatus(${u.id})">${u.status==="active"?"🔒 Disable":"✅ Enable"}</button>
+        </div>
+      </div>`).join("")}`;
+}
+
+function renderPortalHistory(){
+  const el=document.getElementById("portalHistory");if(!el)return;
+  if(!loginHistory.length){el.innerHTML=`<div class="empty-state">No login history yet.</div>`;return;}
+  // Summary per user
+  const userSummary=users.map(u=>{
+    const sessions=loginHistory.filter(h=>h.userId===u.id&&h.duration);
+    const totalMs=sessions.reduce((s,h)=>s+h.duration,0);
+    const lastLogin=loginHistory.find(h=>h.userId===u.id);
+    return{...u,sessions:sessions.length,totalTime:totalMs,lastLogin:lastLogin?.loginAt};
+  }).filter(u=>u.sessions>0||loginHistory.find(h=>h.userId===u.id));
+
+  el.innerHTML=`
+    <div style="margin-bottom:20px">
+      <div style="font-weight:600;font-size:14px;margin-bottom:12px;color:var(--text-2)">User Summary</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>User</th><th>Role</th><th>Total Sessions</th><th>Total Time Spent</th><th>Last Login</th></tr></thead>
+        <tbody>${userSummary.map(u=>`<tr>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="user-big-avatar" style="width:28px;height:28px;font-size:11px">${u.name.charAt(0)}</div><strong>${u.name}</strong></div></td>
+          <td><span style="font-size:11px;color:var(--text-3)">${u.role}</span></td>
+          <td style="font-weight:600;color:var(--accent)">${u.sessions}</td>
+          <td><span class="history-dur">${fmtDur(u.totalTime)}</span></td>
+          <td style="font-size:11.5px;color:var(--text-3)">${fmtTime(u.lastLogin)}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </div>
+    <div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:12px;color:var(--text-2)">All Sessions</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>User</th><th>Login Time</th><th>Logout Time</th><th>Duration</th></tr></thead>
+        <tbody>${loginHistory.map(h=>`<tr>
+          <td><strong>${h.name}</strong><br><span style="font-size:11px;color:var(--text-3)">${h.email}</span></td>
+          <td style="font-size:12px;color:var(--text-2)">${fmtTime(h.loginAt)}</td>
+          <td style="font-size:12px;color:var(--text-3)">${h.logoutAt?fmtTime(h.logoutAt):`<span style="color:var(--available);font-size:11px">● Active now</span>`}</td>
+          <td><span class="history-dur">${h.duration?fmtDur(h.duration):`<span style="color:var(--available);font-size:11px">In progress</span>`}</span></td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// USER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function openAddUserModal(id){
+  editingUserId=id;
+  const u=id?users.find(x=>x.id===id):null;
+  document.getElementById("addUserTitle").textContent=id?"Edit User":"Add User";
+  document.getElementById("f_uName").value=u?.name||"";
+  document.getElementById("f_uEmail").value=u?.email||"";
+  document.getElementById("f_uPass").value=u?.password||"";
+  document.getElementById("f_uRole").value=u?.role||"viewer";
+  // Tab checkboxes
+  const tc=document.getElementById("f_uTabs");
+  tc.innerHTML=tabDefs.filter(t=>t.id!=="admin-portal").map(t=>`
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px">
+      <input type="checkbox" value="${t.id}" ${u?.visibleTabs.includes(t.id)?"checked":""} style="cursor:pointer">
+      ${t.emoji} ${t.label}
+    </label>`).join("");
+  document.getElementById("addUserModal").classList.add("open");
+}
+
+function saveUser(){
+  const name=document.getElementById("f_uName").value.trim();
+  const email=document.getElementById("f_uEmail").value.trim();
+  const pass=document.getElementById("f_uPass").value.trim();
+  const role=document.getElementById("f_uRole").value;
+  if(!name||!email||!pass){showToast("⚠️ Please fill in all fields");return;}
+  const visibleTabs=[...document.querySelectorAll("#f_uTabs input:checked")].map(c=>c.value);
+  if(role==="admin")visibleTabs.push("admin-portal");
+  const user={id:editingUserId??nextUserId++,name,email,password:pass,role,status:"active",visibleTabs};
+  if(editingUserId){const i=users.findIndex(u=>u.id===editingUserId);users[i]=user;}else users.push(user);
+  closeModal("addUserModal");renderPortalUsers();
+  showToast(editingUserId?"✓ User updated":"✓ User added — they can now log in");
+}
+
+function deleteUser(id){if(id===1){showToast("Cannot delete the primary admin");return;}if(!confirm("Remove this user?"))return;users=users.filter(u=>u.id!==id);renderPortalUsers();showToast("🗑 User removed");}
+function toggleUserStatus(id){const u=users.find(x=>x.id===id);if(!u)return;u.status=u.status==="active"?"disabled":"active";renderPortalUsers();showToast(u.status==="active"?"✅ User enabled":"🔒 User disabled");}
+
+// ═══════════════════════════════════════════════════════════════
+// EMPLOYEE MODAL
+// ═══════════════════════════════════════════════════════════════
+function openEditModal(id){const e=employees.find(x=>x.id===id);if(!e)return;editingEmpId=id;document.getElementById("modalTitle").textContent="Edit Employee";document.getElementById("modalSub").textContent=e.employee;document.getElementById("f_employee").value=e.employee;document.getElementById("f_function").value=e.function;document.getElementById("f_specialisation").value=e.specialisation;document.getElementById("f_allocationStatus").value=e.allocationStatus;document.getElementById("f_allocationPct").value=e.allocationPct??"";document.getElementById("f_notes").value=e.notes||"";document.getElementById("editModal").classList.add("open");}
+function openAddModal(){editingEmpId=null;document.getElementById("modalTitle").textContent="Add Employee";document.getElementById("modalSub").textContent="New employee details";["f_employee","f_specialisation","f_allocationPct","f_notes"].forEach(id=>document.getElementById(id).value="");document.getElementById("editModal").classList.add("open");}
+function saveEmployee(){const emp={id:editingEmpId??nextEmpId++,employee:document.getElementById("f_employee").value.trim(),function:document.getElementById("f_function").value,specialisation:document.getElementById("f_specialisation").value.trim(),allocationStatus:document.getElementById("f_allocationStatus").value,allocationPct:document.getElementById("f_allocationPct").value!==""?Number(document.getElementById("f_allocationPct").value):null,notes:document.getElementById("f_notes").value.trim()};if(!emp.employee)return;if(editingEmpId){const i=employees.findIndex(e=>e.id===editingEmpId);employees[i]=emp;}else employees.push(emp);closeModal("editModal");renderMainContent();showToast(editingEmpId?"✓ Updated":"✓ Added");}
+
+// ═══════════════════════════════════════════════════════════════
+// TITLE EDIT
+// ═══════════════════════════════════════════════════════════════
+function openTitleModal(key){editingTitleKey=key;document.getElementById("f_titleText").value=headings[key]||"";document.getElementById("titleModal").classList.add("open");}
+function saveTitleEdit(){const v=document.getElementById("f_titleText").value.trim();if(!v)return;headings[editingTitleKey]=v;closeModal("titleModal");renderMainContent();showToast("✓ Heading updated");}
+
+// ═══════════════════════════════════════════════════════════════
+// HIDE TABS
+// ═══════════════════════════════════════════════════════════════
+function toggleHideTab(id){const t=tabDefs.find(x=>x.id===id);if(!t)return;t.hidden=!t.hidden;renderSuperNav();showToast(t.hidden?`"${t.label}" hidden`:`"${t.label}" visible`);}
+function openHideTabsModal(){
+  document.getElementById("hideTabsList").innerHTML=tabDefs.map(t=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 13px">
+      <span style="font-size:13px;font-weight:500">${t.emoji} ${t.label}</span>
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--text-3)">
+        <input type="checkbox" ${!t.hidden?"checked":""} onchange="tabDefs.find(x=>x.id==='${t.id}').hidden=!this.checked;renderSuperNav()" style="width:14px;height:14px;cursor:pointer">
+        Visible
+      </label>
+    </div>`).join("");
+  document.getElementById("hideTabsModal").classList.add("open");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHANGE PASSWORD
+// ═══════════════════════════════════════════════════════════════
+function openChangePwModal(){["f_curPw","f_newPw","f_confPw"].forEach(id=>document.getElementById(id).value="");document.getElementById("changePwError").textContent="";document.getElementById("changePwModal").classList.add("open");}
+function changePassword(){
+  const cur=document.getElementById("f_curPw").value,nw=document.getElementById("f_newPw").value,conf=document.getElementById("f_confPw").value;
+  if(cur!==ADMIN_PASSWORD){document.getElementById("changePwError").textContent="Current password is incorrect.";return;}
+  if(nw.length<6){document.getElementById("changePwError").textContent="New password must be at least 6 characters.";return;}
+  if(nw!==conf){document.getElementById("changePwError").textContent="New passwords do not match.";return;}
+  ADMIN_PASSWORD=nw;const adminUser=users.find(u=>u.role==="admin"&&u.id===1);if(adminUser)adminUser.password=nw;
+  closeModal("changePwModal");showToast("✅ Password changed successfully");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN PW
+// ═══════════════════════════════════════════════════════════════
 function handleAdminClick(){if(isAdmin)lockAdmin();else openPwModal();}
 function openPwModal(){document.getElementById("pwInput").value="";document.getElementById("pwError").textContent="";document.getElementById("pwModal").classList.add("open");setTimeout(()=>document.getElementById("pwInput").focus(),200);}
 function closePwModal(){document.getElementById("pwModal").classList.remove("open");}
@@ -829,10 +1279,10 @@ function submitPassword(){
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("adminBtnLabel").textContent="Lock";
     document.getElementById("adminBtn").querySelector(".lock-icon").textContent="🔓";
-    closePwModal();renderTable();
-    showToast("✓ Admin mode ON — all sections are now editable");
+    closePwModal();renderMainContent();
+    showToast("✓ Admin mode ON — everything is editable");
   }else{
-    document.getElementById("pwError").textContent="Incorrect password. Try again.";
+    document.getElementById("pwError").textContent="Incorrect password.";
     document.getElementById("pwInput").value="";document.getElementById("pwInput").focus();
   }
 }
@@ -841,12 +1291,11 @@ function lockAdmin(){
   document.getElementById("adminBtn").classList.remove("active");
   document.getElementById("adminBtnLabel").textContent="Admin";
   document.getElementById("adminBtn").querySelector(".lock-icon").textContent="🔒";
-  renderTable();showToast("🔒 Admin mode locked");
+  renderMainContent();showToast("🔒 Admin mode locked");
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-document.getElementById("currentDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"short",year:"numeric",month:"long",day:"numeric"});
-renderStats();renderDonut();renderFnBars();renderReportChips();renderPendingGrid();renderAvailGrid();renderAllocNotes();renderRetainers();
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
 </script>
 </body>
 </html>
